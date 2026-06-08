@@ -21,11 +21,14 @@ schema: spec-driven
 context: |
   Tech stack: Python, React, Node.js
   API conventions: RESTful, JSON responses
+  Currently focus on Week 1 with Specifications, Ingestion Pipelines, Mock data
 
 rules:
   specs:
     - Use Given/When/Then format for scenarios
   design:
     - Include sequence diagrams for complex flows
+  proposal:
+    - Include comprehensive details, ready for implementation
   tasks:
-    - Break tasks into chunks of max 2 hours
+    - Break tasks into verifiable chunks of max 2 hours

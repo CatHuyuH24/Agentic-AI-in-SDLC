@@ -1,50 +1,126 @@
 ## Context
 
-The existing project plan already defines the research goal: build a faithful evidence-centric forecasting prototype, not a full trading system. The design therefore prioritizes a small, explainable pipeline with strict temporal safety, simple rule-based forecasting, and a dashboard that makes evidence and confidence-drop behavior visible.
+The existing project plan already defines the research goal: build a faithful evidence-centric forecasting prototype, not a full trading system. The design therefore prioritizes a small, explainable pipeline with strict temporal safety, deterministic schema validation, and a loader/retriever contract that can be verified locally.
 
 ## Goals / Non-Goals
 
 **Goals:**
 
-- Establish a baseline architecture for data ingestion, temporal filtering, evidence extraction, forecasting, and faithfulness evaluation.
-- Keep implementation explainable and reviewable for academic grading.
-- Support a Streamlit dashboard and testable acceptance criteria.
-- Produce a compact, runnable prototype within the first three implementation weeks.
+- Establish a minimal Week 1 architecture for data ingestion, temporal filtering, and schema validation.
+- Keep the implementation explainable, deterministic, and easy to verify with `pytest`.
+- Produce a runnable prototype that can separate valid and invalid news records before any later modeling work.
 
 **Non-Goals:**
 
-- Full production trading automation.
-- High-frequency market simulation.
-- Advanced GPU model training in the first implementation pass.
+- Full forecasting logic, evidence scoring beyond the loader/retriever contract, or dashboard polish.
+- Real-time ingestion, GPU support, or production trading behavior.
+
+## System Boundaries for Week 1
+
+### In Scope
+
+- Curated sample dataset for AAPL, TSLA, and NVDA with valid and invalid future-news examples.
+- Loader and schema adapter that preserve original and cleaned text fields.
+- Temporal retriever that separates `valid_news` from `invalid_future_news`.
+- Local tests and human review notes for acceptance.
+
+### Out of Scope
+
+- Full faithfulness experiment design beyond baseline confidence-drop reporting.
+- Production pipelines, real-time feeds, or advanced model fine-tuning.
+
+## User Personas
+
+- Research and Spec Reviewer: needs a defensible pipeline and explicit temporal safety.
+- Data and Integration Operator: needs stable ingestion, schema normalization, and deterministic filtering.
+- Project Reviewer / Demo Audience: needs simple evidence display and warning signals for lookahead leakage.
+
+## Implementation Rules
+
+1. Reject malformed or missing fields early and log warnings instead of crashing.
+2. Treat `news_time < forecast_time` as the only accepted path.
+3. Keep the accepted sample deterministic and small enough for local testing.
+4. Record the human review note after each local verification pass.
 
 ## Week 1 Deliverables
 
-- Finalized OpenSpec proposal, design, and spec package for the forecasting capability.
-- A sample dataset with at least 30 curated records covering AAPL, TSLA, and NVDA.
+- Finalized OpenSpec proposal, design, and spec package for the Week 1 prototype.
+- A curated sample dataset with at least 30 records covering AAPL, TSLA, and NVDA.
 - A minimal data loader and schema adapter for price/news input.
-- A baseline temporal retriever with valid vs. invalid future-news separation.
-
-## Week 2 Deliverables
-
-- Rule-based evidence extraction using a financial lexicon and cleaned text fragments.
-- A basic forecast model producing UP/DOWN/HOLD labels and confidence scores.
-- Faithfulness metrics for confidence drop and temporal validity.
-- Initial pytest suite for temporal leakage and evidence logic.
-
-## Week 3 Deliverables
-
-- A working Streamlit dashboard showing prediction, evidence, and warning signals.
-- End-to-end demo output for one or more sample tickers.
-- A short report outline, test log, and risk notes for the final hand-off.
+- A baseline temporal retriever that separates `valid_news` and `invalid_future_news`.
+- Local tests for schema validation, future-news rejection, and warning behavior.
 
 ## Detailed Architecture Decisions
 
-1. Data flow: raw price/news input -> normalize and validate -> temporal filter -> evidence extraction -> forecasting -> faithfulness analysis -> dashboard.
-2. Temporal safety: `news_time < forecast_time` is the only valid path; `news_time >= forecast_time` is rejected and highlighted as lookahead leakage.
-3. Evidence extraction: deterministic lexicon rules over cleaned text, with support score and expected direction for each fragment.
-4. Forecasting: start with a simple rule-based model using news sentiment and price feature direction; reserve FinBERT integration for later extension.
-5. Faithfulness: compute confidence drop when cited evidence is masked or neutralized, and report the result as evidence necessity vs. post-hoc decoration.
-6. Dashboard: Streamlit for fast demonstration, Plotly for simple comparison bars, and tables for evidence and warnings.
+1. Data flow for Week 1: raw records -> normalize and validate -> temporal filter -> warning/validation report -> testable JSON output.
+2. Temporal safety: `news_time < forecast_time` is the only accepted path; `news_time >= forecast_time` is rejected and flagged as future-dated leakage.
+3. Schema contract: each record must contain `ticker`, `forecast_time`, `news`, `price_features`, and `label`, where `news` is an array of items with `news_id`, `news_time`, `title`, and `text`.
+4. Error handling: malformed records are warned about and skipped so the pipeline remains runnable.
+5. Output contract: the loader/retriever should expose structured `valid_news`, `invalid_future_news`, and `warnings` lists for downstream modules.
+
+## Canonical Data Models
+
+### Input data model
+
+- `ticker`: string, required, ticker symbol such as `AAPL`.
+- `forecast_time`: string timestamp in a consistent format, required.
+- `news`: array of news records, required.
+  - `news_id`: string, required for traceability.
+  - `news_time`: string timestamp, required.
+  - `title`: string, required.
+  - `text`: string, required.
+- `price_features`: object, required.
+  - `price_5d_return`: float, required.
+  - `volume_change_pct`: float, required.
+- `label`: string, required, one of `UP`, `DOWN`, `HOLD`.
+
+### Output data model
+
+- `ticker`: string.
+- `forecast_time`: string.
+- `valid_news`: array of accepted news items, each with original fields and `cleaned_text`.
+- `invalid_future_news`: array of rejected news items with reason `news_time >= forecast_time`.
+- `warnings`: array of validation messages for malformed rows, missing fields, or invalid labels.
+
+### Example JSON contracts
+
+```json
+{
+  "ticker": "AAPL",
+  "forecast_time": "2025-03-12 09:00:00",
+  "news": [
+    {
+      "news_id": "0001",
+      "news_time": "2025-03-11 08:30:00",
+      "title": "Apple reports weak iPhone sales in China",
+      "text": "Apple reports weak iPhone sales in China after softer demand."
+    }
+  ],
+  "price_features": {
+    "price_5d_return": -0.02,
+    "volume_change_pct": 0.15
+  },
+  "label": "DOWN"
+}
+```
+
+```json
+{
+  "ticker": "AAPL",
+  "forecast_time": "2025-03-12 09:00:00",
+  "valid_news": [],
+  "invalid_future_news": [
+    {
+      "news_id": "0002",
+      "news_time": "2025-03-12 15:30:00",
+      "reason": "news_time >= forecast_time"
+    }
+  ],
+  "warnings": [
+    "Record 0002 rejected because news_time is not earlier than forecast_time."
+  ]
+}
+```
 
 ## Dataset Strategy
 
@@ -56,16 +132,16 @@ The existing project plan already defines the research goal: build a faithful ev
 
 ## Testing Strategy
 
-- Unit tests: temporal rule correctness, evidence extraction polarity, confidence-drop calculation.
-- Integration tests: one full sample run through data ingestion, retriever, extractor, model, and dashboard rendering.
+- Unit tests: schema validation, date parsing, temporal rule correctness, and malformed-record warning behavior.
+- Integration tests: one full sample run from raw input file through loader and retriever to the final JSON output.
 - Human review: all AI-generated code must be verified with a local run and recorded in the OpenSpec task log.
-- Acceptance checks: no future-dated news passes the retriever, evidence fragments are displayed, and predictions remain reproducible for the same input.
+- Acceptance checks: no future-dated news enters `valid_news`, warnings are produced for malformed records, and the output is reproducible for the same input.
 
 ## Agentic SDLC Workflow
 
 1. Generate: AI assistant drafts logic, tests, or documentation.
 2. Review: human developer validates syntax, logic, and temporal boundaries.
-3. Test: run local pytest and sample dashboard checks.
+3. Test: run local `pytest` against the loader and retriever path.
 4. Record: append the human review note to the task ledger for traceability.
 5. Iterate: fix issues before promotion to the main implementation path.
 
@@ -73,10 +149,10 @@ The existing project plan already defines the research goal: build a faithful ev
 
 - `docs/` — rubric brief and project master plan
 - `openspec/changes/faithful-evidence-forecasting/` — proposal, design, spec, and tasks
-- `data/` — curated sample and real-data corpus
-- `src/` — `retriever.py`, `evidence_extractor.py`, `forecast_model.py`, `faithfulness_metrics.py`, `dashboard.py`
-- `tests/` — temporal retriever and faithfulness metric tests
-- `outputs/` — prediction and visualization outputs
+- `data/` — curated sample dataset used for Week 1 validation
+- `src/` — `loader.py`, `schema_adapter.py`, and `retriever.py` for the initial runnable pipeline
+- `tests/` — temporal retriever and schema tests for Week 1 acceptance
+- `outputs/` — generated validation output and warnings log
 
 ## Risks / Trade-offs
 
@@ -88,9 +164,9 @@ The existing project plan already defines the research goal: build a faithful ev
 
 ## Migration Plan
 
-- Implement the core modules in the existing repository structure.
-- Verify each module with tests before tying them into the dashboard.
-- Keep the design modular so later upgrades can add FinBERT or real-data ingestion without rewriting the pipeline.
+- Implement the Week 1 modules in the existing repository structure.
+- Verify each module with tests before any later evidence or dashboard work is added.
+- Keep the design modular so future modules can consume the same loader and retriever contract without rework.
 
 ## Open Questions
 
