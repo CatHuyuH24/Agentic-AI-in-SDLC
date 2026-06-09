@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "test:week1": "python -m pytest",
+    "verify:week1": "python scripts/verify_week1.py"
+  },
   "dependencies": {
     "@fission-ai/openspec": "^1.4.1"
   }

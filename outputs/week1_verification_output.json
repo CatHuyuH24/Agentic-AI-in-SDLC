@@ -1,0 +1,601 @@
+{
+  "valid_news_items": 13,
+  "invalid_future_news_items": 24,
+  "warning_items": 30,
+  "records": [
+    {
+      "ticker": "AAPL",
+      "forecast_time": "2026-06-03 09:00:00",
+      "valid_news": [],
+      "invalid_future_news": [
+        {
+          "news_id": "AAPL-01",
+          "news_time": "2026-06-03 09:05:00",
+          "reason": "news_time >= forecast_time",
+          "title": "AAPL update 1"
+        }
+      ],
+      "warnings": [
+        "Record 1: news item AAPL-01 is not earlier than forecast_time."
+      ]
+    },
+    {
+      "ticker": "AAPL",
+      "forecast_time": "2026-06-03 09:00:00",
+      "valid_news": [
+        {
+          "news_id": "AAPL-02",
+          "news_time": "2026-06-03 08:30:00",
+          "title": "AAPL update 2",
+          "text": "AAPL saw notable trading momentum in the session.",
+          "cleaned_text": "aapl saw notable trading momentum in the session"
+        }
+      ],
+      "invalid_future_news": [],
+      "warnings": []
+    },
+    {
+      "ticker": "AAPL",
+      "forecast_time": "2026-06-03 09:00:00",
+      "valid_news": [
+        {
+          "news_id": "AAPL-03",
+          "news_time": "2026-06-03 08:30:00",
+          "title": "AAPL update 3",
+          "text": "AAPL saw notable trading momentum in the session.",
+          "cleaned_text": "aapl saw notable trading momentum in the session"
+        }
+      ],
+      "invalid_future_news": [],
+      "warnings": []
+    },
+    {
+      "ticker": "AAPL",
+      "forecast_time": "2026-06-03 09:00:00",
+      "valid_news": [],
+      "invalid_future_news": [
+        {
+          "news_id": "AAPL-04",
+          "news_time": "2026-06-03 10:30:00",
+          "reason": "news_time >= forecast_time",
+          "title": "AAPL update 4"
+        }
+      ],
+      "warnings": [
+        "Record 4: news item AAPL-04 is not earlier than forecast_time."
+      ]
+    },
+    {
+      "ticker": "AAPL",
+      "forecast_time": "2026-06-03 09:00:00",
+      "valid_news": [],
+      "invalid_future_news": [
+        {
+          "news_id": "AAPL-05",
+          "news_time": "2026-06-03 09:15:00",
+          "reason": "news_time >= forecast_time",
+          "title": "AAPL update 5"
+        }
+      ],
+      "warnings": [
+        "Record 5: news item AAPL-05 is not earlier than forecast_time."
+      ]
+    },
+    {
+      "ticker": "AAPL",
+      "forecast_time": "2026-06-03 09:00:00",
+      "valid_news": [],
+      "invalid_future_news": [
+        {
+          "news_id": "AAPL-06",
+          "news_time": "2026-06-03 09:05:00",
+          "reason": "news_time >= forecast_time",
+          "title": "AAPL update 6"
+        }
+      ],
+      "warnings": [
+        "Record 6: news item AAPL-06 is not earlier than forecast_time."
+      ]
+    },
+    {
+      "ticker": "AAPL",
+      "forecast_time": "2026-06-03 09:00:00",
+      "valid_news": [],
+      "invalid_future_news": [
+        {
+          "news_id": "AAPL-07",
+          "news_time": "2026-06-03 10:30:00",
+          "reason": "news_time >= forecast_time",
+          "title": "AAPL update 7"
+        }
+      ],
+      "warnings": [
+        "Record 7: news item AAPL-07 is not earlier than forecast_time."
+      ]
+    },
+    {
+      "ticker": "AAPL",
+      "forecast_time": "2026-06-03 09:00:00",
+      "valid_news": [
+        {
+          "news_id": "AAPL-08",
+          "news_time": "2026-06-03 08:30:00",
+          "title": "AAPL update 8",
+          "text": "AAPL saw notable trading momentum in the session.",
+          "cleaned_text": "aapl saw notable trading momentum in the session"
+        }
+      ],
+      "invalid_future_news": [],
+      "warnings": []
+    },
+    {
+      "ticker": "AAPL",
+      "forecast_time": "2026-06-03 09:00:00",
+      "valid_news": [],
+      "invalid_future_news": [
+        {
+          "news_id": "AAPL-09",
+          "news_time": "2026-06-03 09:15:00",
+          "reason": "news_time >= forecast_time",
+          "title": "AAPL update 9"
+        }
+      ],
+      "warnings": [
+        "Record 9: news item AAPL-09 is not earlier than forecast_time."
+      ]
+    },
+    {
+      "ticker": "AAPL",
+      "forecast_time": "2026-06-03 09:00:00",
+      "valid_news": [],
+      "invalid_future_news": [
+        {
+          "news_id": "AAPL-10",
+          "news_time": "2026-06-03 10:30:00",
+          "reason": "news_time >= forecast_time",
+          "title": "AAPL update 10"
+        }
+      ],
+      "warnings": [
+        "Record 10: news item AAPL-10 is not earlier than forecast_time."
+      ]
+    },
+    {
+      "ticker": "AAPL",
+      "forecast_time": "2026-06-03 09:00:00",
+      "valid_news": [],
+      "invalid_future_news": [
+        {
+          "news_id": "AAPL-11",
+          "news_time": "2026-06-03 09:05:00",
+          "reason": "news_time >= forecast_time",
+          "title": "AAPL update 11"
+        }
+      ],
+      "warnings": [
+        "Record 11: news item AAPL-11 is not earlier than forecast_time."
+      ]
+    },
+    {
+      "ticker": "AAPL",
+      "forecast_time": "2026-06-03 09:00:00",
+      "valid_news": [
+        {
+          "news_id": "AAPL-12",
+          "news_time": "2026-06-03 08:30:00",
+          "title": "AAPL update 12",
+          "text": "AAPL saw notable trading momentum in the session.",
+          "cleaned_text": "aapl saw notable trading momentum in the session"
+        }
+      ],
+      "invalid_future_news": [],
+      "warnings": []
+    },
+    {
+      "ticker": "TSLA",
+      "forecast_time": "2026-06-04 09:00:00",
+      "valid_news": [],
+      "invalid_future_news": [
+        {
+          "news_id": "TSLA-01",
+          "news_time": "2026-06-04 09:05:00",
+          "reason": "news_time >= forecast_time",
+          "title": "TSLA update 1"
+        }
+      ],
+      "warnings": [
+        "Record 13: news item TSLA-01 is not earlier than forecast_time."
+      ]
+    },
+    {
+      "ticker": "TSLA",
+      "forecast_time": "2026-06-04 09:00:00",
+      "valid_news": [
+        {
+          "news_id": "TSLA-02",
+          "news_time": "2026-06-04 08:30:00",
+          "title": "TSLA update 2",
+          "text": "TSLA saw notable trading momentum in the session.",
+          "cleaned_text": "tsla saw notable trading momentum in the session"
+        }
+      ],
+      "invalid_future_news": [],
+      "warnings": []
+    },
+    {
+      "ticker": "TSLA",
+      "forecast_time": "2026-06-04 09:00:00",
+      "valid_news": [
+        {
+          "news_id": "TSLA-03",
+          "news_time": "2026-06-04 08:30:00",
+          "title": "TSLA update 3",
+          "text": "TSLA saw notable trading momentum in the session.",
+          "cleaned_text": "tsla saw notable trading momentum in the session"
+        }
+      ],
+      "invalid_future_news": [],
+      "warnings": []
+    },
+    {
+      "ticker": "TSLA",
+      "forecast_time": "2026-06-04 09:00:00",
+      "valid_news": [],
+      "invalid_future_news": [
+        {
+          "news_id": "TSLA-04",
+          "news_time": "2026-06-04 10:30:00",
+          "reason": "news_time >= forecast_time",
+          "title": "TSLA update 4"
+        }
+      ],
+      "warnings": [
+        "Record 16: news item TSLA-04 is not earlier than forecast_time."
+      ]
+    },
+    {
+      "ticker": "TSLA",
+      "forecast_time": "2026-06-04 09:00:00",
+      "valid_news": [],
+      "invalid_future_news": [
+        {
+          "news_id": "TSLA-05",
+          "news_time": "2026-06-04 09:15:00",
+          "reason": "news_time >= forecast_time",
+          "title": "TSLA update 5"
+        }
+      ],
+      "warnings": [
+        "Record 17: news item TSLA-05 is not earlier than forecast_time."
+      ]
+    },
+    {
+      "ticker": "TSLA",
+      "forecast_time": "2026-06-04 09:00:00",
+      "valid_news": [],
+      "invalid_future_news": [
+        {
+          "news_id": "TSLA-06",
+          "news_time": "2026-06-04 09:05:00",
+          "reason": "news_time >= forecast_time",
+          "title": "TSLA update 6"
+        }
+      ],
+      "warnings": [
+        "Record 18: news item TSLA-06 is not earlier than forecast_time."
+      ]
+    },
+    {
+      "ticker": "TSLA",
+      "forecast_time": "2026-06-04 09:00:00",
+      "valid_news": [],
+      "invalid_future_news": [
+        {
+          "news_id": "TSLA-07",
+          "news_time": "2026-06-04 10:30:00",
+          "reason": "news_time >= forecast_time",
+          "title": "TSLA update 7"
+        }
+      ],
+      "warnings": [
+        "Record 19: news item TSLA-07 is not earlier than forecast_time."
+      ]
+    },
+    {
+      "ticker": "TSLA",
+      "forecast_time": "2026-06-04 09:00:00",
+      "valid_news": [
+        {
+          "news_id": "TSLA-08",
+          "news_time": "2026-06-04 08:30:00",
+          "title": "TSLA update 8",
+          "text": "TSLA saw notable trading momentum in the session.",
+          "cleaned_text": "tsla saw notable trading momentum in the session"
+        }
+      ],
+      "invalid_future_news": [],
+      "warnings": []
+    },
+    {
+      "ticker": "TSLA",
+      "forecast_time": "2026-06-04 09:00:00",
+      "valid_news": [],
+      "invalid_future_news": [
+        {
+          "news_id": "TSLA-09",
+          "news_time": "2026-06-04 09:15:00",
+          "reason": "news_time >= forecast_time",
+          "title": "TSLA update 9"
+        }
+      ],
+      "warnings": [
+        "Record 21: news item TSLA-09 is not earlier than forecast_time."
+      ]
+    },
+    {
+      "ticker": "TSLA",
+      "forecast_time": "2026-06-04 09:00:00",
+      "valid_news": [],
+      "invalid_future_news": [
+        {
+          "news_id": "TSLA-10",
+          "news_time": "2026-06-04 10:30:00",
+          "reason": "news_time >= forecast_time",
+          "title": "TSLA update 10"
+        }
+      ],
+      "warnings": [
+        "Record 22: news item TSLA-10 is not earlier than forecast_time."
+      ]
+    },
+    {
+      "ticker": "TSLA",
+      "forecast_time": "2026-06-04 09:00:00",
+      "valid_news": [],
+      "invalid_future_news": [
+        {
+          "news_id": "TSLA-11",
+          "news_time": "2026-06-04 09:05:00",
+          "reason": "news_time >= forecast_time",
+          "title": "TSLA update 11"
+        }
+      ],
+      "warnings": [
+        "Record 23: news item TSLA-11 is not earlier than forecast_time."
+      ]
+    },
+    {
+      "ticker": "TSLA",
+      "forecast_time": "2026-06-04 09:00:00",
+      "valid_news": [
+        {
+          "news_id": "TSLA-12",
+          "news_time": "2026-06-04 08:30:00",
+          "title": "TSLA update 12",
+          "text": "TSLA saw notable trading momentum in the session.",
+          "cleaned_text": "tsla saw notable trading momentum in the session"
+        }
+      ],
+      "invalid_future_news": [],
+      "warnings": []
+    },
+    {
+      "ticker": "NVDA",
+      "forecast_time": "2026-06-05 09:00:00",
+      "valid_news": [],
+      "invalid_future_news": [
+        {
+          "news_id": "NVDA-01",
+          "news_time": "2026-06-05 09:05:00",
+          "reason": "news_time >= forecast_time",
+          "title": "NVDA update 1"
+        }
+      ],
+      "warnings": [
+        "Record 25: news item NVDA-01 is not earlier than forecast_time."
+      ]
+    },
+    {
+      "ticker": "NVDA",
+      "forecast_time": "2026-06-05 09:00:00",
+      "valid_news": [
+        {
+          "news_id": "NVDA-02",
+          "news_time": "2026-06-05 08:30:00",
+          "title": "NVDA update 2",
+          "text": "NVDA saw notable trading momentum in the session.",
+          "cleaned_text": "nvda saw notable trading momentum in the session"
+        }
+      ],
+      "invalid_future_news": [],
+      "warnings": []
+    },
+    {
+      "ticker": "NVDA",
+      "forecast_time": "2026-06-05 09:00:00",
+      "valid_news": [
+        {
+          "news_id": "NVDA-03",
+          "news_time": "2026-06-05 08:30:00",
+          "title": "NVDA update 3",
+          "text": "NVDA saw notable trading momentum in the session.",
+          "cleaned_text": "nvda saw notable trading momentum in the session"
+        }
+      ],
+      "invalid_future_news": [],
+      "warnings": []
+    },
+    {
+      "ticker": "NVDA",
+      "forecast_time": "2026-06-05 09:00:00",
+      "valid_news": [],
+      "invalid_future_news": [
+        {
+          "news_id": "NVDA-04",
+          "news_time": "2026-06-05 10:30:00",
+          "reason": "news_time >= forecast_time",
+          "title": "NVDA update 4"
+        }
+      ],
+      "warnings": [
+        "Record 28: news item NVDA-04 is not earlier than forecast_time."
+      ]
+    },
+    {
+      "ticker": "NVDA",
+      "forecast_time": "2026-06-05 09:00:00",
+      "valid_news": [],
+      "invalid_future_news": [
+        {
+          "news_id": "NVDA-05",
+          "news_time": "2026-06-05 09:15:00",
+          "reason": "news_time >= forecast_time",
+          "title": "NVDA update 5"
+        }
+      ],
+      "warnings": [
+        "Record 29: news item NVDA-05 is not earlier than forecast_time."
+      ]
+    },
+    {
+      "ticker": "NVDA",
+      "forecast_time": "2026-06-05 09:00:00",
+      "valid_news": [],
+      "invalid_future_news": [
+        {
+          "news_id": "NVDA-06",
+          "news_time": "2026-06-05 09:05:00",
+          "reason": "news_time >= forecast_time",
+          "title": "NVDA update 6"
+        }
+      ],
+      "warnings": [
+        "Record 30: news item NVDA-06 is not earlier than forecast_time."
+      ]
+    },
+    {
+      "ticker": "NVDA",
+      "forecast_time": "2026-06-05 09:00:00",
+      "valid_news": [],
+      "invalid_future_news": [
+        {
+          "news_id": "NVDA-07",
+          "news_time": "2026-06-05 10:30:00",
+          "reason": "news_time >= forecast_time",
+          "title": "NVDA update 7"
+        }
+      ],
+      "warnings": [
+        "Record 31: news item NVDA-07 is not earlier than forecast_time."
+      ]
+    },
+    {
+      "ticker": "NVDA",
+      "forecast_time": "2026-06-05 09:00:00",
+      "valid_news": [
+        {
+          "news_id": "NVDA-08",
+          "news_time": "2026-06-05 08:30:00",
+          "title": "NVDA update 8",
+          "text": "NVDA saw notable trading momentum in the session.",
+          "cleaned_text": "nvda saw notable trading momentum in the session"
+        }
+      ],
+      "invalid_future_news": [],
+      "warnings": []
+    },
+    {
+      "ticker": "NVDA",
+      "forecast_time": "2026-06-05 09:00:00",
+      "valid_news": [],
+      "invalid_future_news": [
+        {
+          "news_id": "NVDA-09",
+          "news_time": "2026-06-05 09:15:00",
+          "reason": "news_time >= forecast_time",
+          "title": "NVDA update 9"
+        }
+      ],
+      "warnings": [
+        "Record 33: news item NVDA-09 is not earlier than forecast_time."
+      ]
+    },
+    {
+      "ticker": "NVDA",
+      "forecast_time": "2026-06-05 09:00:00",
+      "valid_news": [],
+      "invalid_future_news": [
+        {
+          "news_id": "NVDA-10",
+          "news_time": "2026-06-05 10:30:00",
+          "reason": "news_time >= forecast_time",
+          "title": "NVDA update 10"
+        }
+      ],
+      "warnings": [
+        "Record 34: news item NVDA-10 is not earlier than forecast_time."
+      ]
+    },
+    {
+      "ticker": "NVDA",
+      "forecast_time": "2026-06-05 09:00:00",
+      "valid_news": [],
+      "invalid_future_news": [
+        {
+          "news_id": "NVDA-11",
+          "news_time": "2026-06-05 09:05:00",
+          "reason": "news_time >= forecast_time",
+          "title": "NVDA update 11"
+        }
+      ],
+      "warnings": [
+        "Record 35: news item NVDA-11 is not earlier than forecast_time."
+      ]
+    },
+    {
+      "ticker": "NVDA",
+      "forecast_time": "2026-06-05 09:00:00",
+      "valid_news": [
+        {
+          "news_id": "NVDA-12",
+          "news_time": "2026-06-05 08:30:00",
+          "title": "NVDA update 12",
+          "text": "NVDA saw notable trading momentum in the session.",
+          "cleaned_text": "nvda saw notable trading momentum in the session"
+        }
+      ],
+      "invalid_future_news": [],
+      "warnings": []
+    },
+    {
+      "ticker": "MSFT",
+      "forecast_time": "2026-06-06 09:00:00",
+      "valid_news": [],
+      "invalid_future_news": [],
+      "warnings": [
+        "Record 37: price_5d_return must be numeric.",
+        "Record 37: label must be one of UP, DOWN, HOLD.",
+        "Record 37: news_time for MSFT-99 is invalid.",
+        "Record 37: news text for MSFT-99 is empty.",
+        "Record 37: unable to compare timestamps for MSFT-99."
+      ]
+    },
+    {
+      "ticker": "GOOG",
+      "forecast_time": "2026-06-06 09:00:00",
+      "valid_news": [
+        {
+          "news_id": "GOOG-100",
+          "news_time": "2026-06-05 08:00:00",
+          "title": "Clean",
+          "text": "  ",
+          "cleaned_text": ""
+        }
+      ],
+      "invalid_future_news": [],
+      "warnings": [
+        "Record 38: news text for GOOG-100 is empty."
+      ]
+    }
+  ]
+}

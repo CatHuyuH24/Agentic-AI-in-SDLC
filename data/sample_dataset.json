@@ -1,0 +1,648 @@
+[
+  {
+    "ticker": "AAPL",
+    "forecast_time": "2026-06-03 09:00:00",
+    "news": [
+      {
+        "news_id": "AAPL-01",
+        "news_time": "2026-06-03 09:05:00",
+        "title": "AAPL update 1",
+        "text": "AAPL saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": -0.02,
+      "volume_change_pct": 0.05
+    },
+    "label": "UP"
+  },
+  {
+    "ticker": "AAPL",
+    "forecast_time": "2026-06-03 09:00:00",
+    "news": [
+      {
+        "news_id": "AAPL-02",
+        "news_time": "2026-06-03 08:30:00",
+        "title": "AAPL update 2",
+        "text": "AAPL saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": -0.017,
+      "volume_change_pct": 0.060000000000000005
+    },
+    "label": "HOLD"
+  },
+  {
+    "ticker": "AAPL",
+    "forecast_time": "2026-06-03 09:00:00",
+    "news": [
+      {
+        "news_id": "AAPL-03",
+        "news_time": "2026-06-03 08:30:00",
+        "title": "AAPL update 3",
+        "text": "AAPL saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": -0.014,
+      "volume_change_pct": 0.07
+    },
+    "label": "DOWN"
+  },
+  {
+    "ticker": "AAPL",
+    "forecast_time": "2026-06-03 09:00:00",
+    "news": [
+      {
+        "news_id": "AAPL-04",
+        "news_time": "2026-06-03 10:30:00",
+        "title": "AAPL update 4",
+        "text": "AAPL saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": -0.011,
+      "volume_change_pct": 0.08
+    },
+    "label": "UP"
+  },
+  {
+    "ticker": "AAPL",
+    "forecast_time": "2026-06-03 09:00:00",
+    "news": [
+      {
+        "news_id": "AAPL-05",
+        "news_time": "2026-06-03 09:15:00",
+        "title": "AAPL update 5",
+        "text": "AAPL saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": -0.008,
+      "volume_change_pct": 0.09
+    },
+    "label": "DOWN"
+  },
+  {
+    "ticker": "AAPL",
+    "forecast_time": "2026-06-03 09:00:00",
+    "news": [
+      {
+        "news_id": "AAPL-06",
+        "news_time": "2026-06-03 09:05:00",
+        "title": "AAPL update 6",
+        "text": "AAPL saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": -0.005000000000000001,
+      "volume_change_pct": 0.1
+    },
+    "label": "HOLD"
+  },
+  {
+    "ticker": "AAPL",
+    "forecast_time": "2026-06-03 09:00:00",
+    "news": [
+      {
+        "news_id": "AAPL-07",
+        "news_time": "2026-06-03 10:30:00",
+        "title": "AAPL update 7",
+        "text": "AAPL saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": -0.0019999999999999983,
+      "volume_change_pct": 0.11
+    },
+    "label": "UP"
+  },
+  {
+    "ticker": "AAPL",
+    "forecast_time": "2026-06-03 09:00:00",
+    "news": [
+      {
+        "news_id": "AAPL-08",
+        "news_time": "2026-06-03 08:30:00",
+        "title": "AAPL update 8",
+        "text": "AAPL saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": 0.0010000000000000009,
+      "volume_change_pct": 0.12000000000000001
+    },
+    "label": "HOLD"
+  },
+  {
+    "ticker": "AAPL",
+    "forecast_time": "2026-06-03 09:00:00",
+    "news": [
+      {
+        "news_id": "AAPL-09",
+        "news_time": "2026-06-03 09:15:00",
+        "title": "AAPL update 9",
+        "text": "AAPL saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": 0.004,
+      "volume_change_pct": 0.13
+    },
+    "label": "DOWN"
+  },
+  {
+    "ticker": "AAPL",
+    "forecast_time": "2026-06-03 09:00:00",
+    "news": [
+      {
+        "news_id": "AAPL-10",
+        "news_time": "2026-06-03 10:30:00",
+        "title": "AAPL update 10",
+        "text": "AAPL saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": 0.006999999999999999,
+      "volume_change_pct": 0.14
+    },
+    "label": "UP"
+  },
+  {
+    "ticker": "AAPL",
+    "forecast_time": "2026-06-03 09:00:00",
+    "news": [
+      {
+        "news_id": "AAPL-11",
+        "news_time": "2026-06-03 09:05:00",
+        "title": "AAPL update 11",
+        "text": "AAPL saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": 0.009999999999999998,
+      "volume_change_pct": 0.15000000000000002
+    },
+    "label": "DOWN"
+  },
+  {
+    "ticker": "AAPL",
+    "forecast_time": "2026-06-03 09:00:00",
+    "news": [
+      {
+        "news_id": "AAPL-12",
+        "news_time": "2026-06-03 08:30:00",
+        "title": "AAPL update 12",
+        "text": "AAPL saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": 0.013000000000000001,
+      "volume_change_pct": 0.16
+    },
+    "label": "HOLD"
+  },
+  {
+    "ticker": "TSLA",
+    "forecast_time": "2026-06-04 09:00:00",
+    "news": [
+      {
+        "news_id": "TSLA-01",
+        "news_time": "2026-06-04 09:05:00",
+        "title": "TSLA update 1",
+        "text": "TSLA saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": -0.02,
+      "volume_change_pct": 0.05
+    },
+    "label": "UP"
+  },
+  {
+    "ticker": "TSLA",
+    "forecast_time": "2026-06-04 09:00:00",
+    "news": [
+      {
+        "news_id": "TSLA-02",
+        "news_time": "2026-06-04 08:30:00",
+        "title": "TSLA update 2",
+        "text": "TSLA saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": -0.017,
+      "volume_change_pct": 0.060000000000000005
+    },
+    "label": "HOLD"
+  },
+  {
+    "ticker": "TSLA",
+    "forecast_time": "2026-06-04 09:00:00",
+    "news": [
+      {
+        "news_id": "TSLA-03",
+        "news_time": "2026-06-04 08:30:00",
+        "title": "TSLA update 3",
+        "text": "TSLA saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": -0.014,
+      "volume_change_pct": 0.07
+    },
+    "label": "DOWN"
+  },
+  {
+    "ticker": "TSLA",
+    "forecast_time": "2026-06-04 09:00:00",
+    "news": [
+      {
+        "news_id": "TSLA-04",
+        "news_time": "2026-06-04 10:30:00",
+        "title": "TSLA update 4",
+        "text": "TSLA saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": -0.011,
+      "volume_change_pct": 0.08
+    },
+    "label": "UP"
+  },
+  {
+    "ticker": "TSLA",
+    "forecast_time": "2026-06-04 09:00:00",
+    "news": [
+      {
+        "news_id": "TSLA-05",
+        "news_time": "2026-06-04 09:15:00",
+        "title": "TSLA update 5",
+        "text": "TSLA saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": -0.008,
+      "volume_change_pct": 0.09
+    },
+    "label": "DOWN"
+  },
+  {
+    "ticker": "TSLA",
+    "forecast_time": "2026-06-04 09:00:00",
+    "news": [
+      {
+        "news_id": "TSLA-06",
+        "news_time": "2026-06-04 09:05:00",
+        "title": "TSLA update 6",
+        "text": "TSLA saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": -0.005000000000000001,
+      "volume_change_pct": 0.1
+    },
+    "label": "HOLD"
+  },
+  {
+    "ticker": "TSLA",
+    "forecast_time": "2026-06-04 09:00:00",
+    "news": [
+      {
+        "news_id": "TSLA-07",
+        "news_time": "2026-06-04 10:30:00",
+        "title": "TSLA update 7",
+        "text": "TSLA saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": -0.0019999999999999983,
+      "volume_change_pct": 0.11
+    },
+    "label": "UP"
+  },
+  {
+    "ticker": "TSLA",
+    "forecast_time": "2026-06-04 09:00:00",
+    "news": [
+      {
+        "news_id": "TSLA-08",
+        "news_time": "2026-06-04 08:30:00",
+        "title": "TSLA update 8",
+        "text": "TSLA saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": 0.0010000000000000009,
+      "volume_change_pct": 0.12000000000000001
+    },
+    "label": "HOLD"
+  },
+  {
+    "ticker": "TSLA",
+    "forecast_time": "2026-06-04 09:00:00",
+    "news": [
+      {
+        "news_id": "TSLA-09",
+        "news_time": "2026-06-04 09:15:00",
+        "title": "TSLA update 9",
+        "text": "TSLA saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": 0.004,
+      "volume_change_pct": 0.13
+    },
+    "label": "DOWN"
+  },
+  {
+    "ticker": "TSLA",
+    "forecast_time": "2026-06-04 09:00:00",
+    "news": [
+      {
+        "news_id": "TSLA-10",
+        "news_time": "2026-06-04 10:30:00",
+        "title": "TSLA update 10",
+        "text": "TSLA saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": 0.006999999999999999,
+      "volume_change_pct": 0.14
+    },
+    "label": "UP"
+  },
+  {
+    "ticker": "TSLA",
+    "forecast_time": "2026-06-04 09:00:00",
+    "news": [
+      {
+        "news_id": "TSLA-11",
+        "news_time": "2026-06-04 09:05:00",
+        "title": "TSLA update 11",
+        "text": "TSLA saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": 0.009999999999999998,
+      "volume_change_pct": 0.15000000000000002
+    },
+    "label": "DOWN"
+  },
+  {
+    "ticker": "TSLA",
+    "forecast_time": "2026-06-04 09:00:00",
+    "news": [
+      {
+        "news_id": "TSLA-12",
+        "news_time": "2026-06-04 08:30:00",
+        "title": "TSLA update 12",
+        "text": "TSLA saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": 0.013000000000000001,
+      "volume_change_pct": 0.16
+    },
+    "label": "HOLD"
+  },
+  {
+    "ticker": "NVDA",
+    "forecast_time": "2026-06-05 09:00:00",
+    "news": [
+      {
+        "news_id": "NVDA-01",
+        "news_time": "2026-06-05 09:05:00",
+        "title": "NVDA update 1",
+        "text": "NVDA saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": -0.02,
+      "volume_change_pct": 0.05
+    },
+    "label": "UP"
+  },
+  {
+    "ticker": "NVDA",
+    "forecast_time": "2026-06-05 09:00:00",
+    "news": [
+      {
+        "news_id": "NVDA-02",
+        "news_time": "2026-06-05 08:30:00",
+        "title": "NVDA update 2",
+        "text": "NVDA saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": -0.017,
+      "volume_change_pct": 0.060000000000000005
+    },
+    "label": "HOLD"
+  },
+  {
+    "ticker": "NVDA",
+    "forecast_time": "2026-06-05 09:00:00",
+    "news": [
+      {
+        "news_id": "NVDA-03",
+        "news_time": "2026-06-05 08:30:00",
+        "title": "NVDA update 3",
+        "text": "NVDA saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": -0.014,
+      "volume_change_pct": 0.07
+    },
+    "label": "DOWN"
+  },
+  {
+    "ticker": "NVDA",
+    "forecast_time": "2026-06-05 09:00:00",
+    "news": [
+      {
+        "news_id": "NVDA-04",
+        "news_time": "2026-06-05 10:30:00",
+        "title": "NVDA update 4",
+        "text": "NVDA saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": -0.011,
+      "volume_change_pct": 0.08
+    },
+    "label": "UP"
+  },
+  {
+    "ticker": "NVDA",
+    "forecast_time": "2026-06-05 09:00:00",
+    "news": [
+      {
+        "news_id": "NVDA-05",
+        "news_time": "2026-06-05 09:15:00",
+        "title": "NVDA update 5",
+        "text": "NVDA saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": -0.008,
+      "volume_change_pct": 0.09
+    },
+    "label": "DOWN"
+  },
+  {
+    "ticker": "NVDA",
+    "forecast_time": "2026-06-05 09:00:00",
+    "news": [
+      {
+        "news_id": "NVDA-06",
+        "news_time": "2026-06-05 09:05:00",
+        "title": "NVDA update 6",
+        "text": "NVDA saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": -0.005000000000000001,
+      "volume_change_pct": 0.1
+    },
+    "label": "HOLD"
+  },
+  {
+    "ticker": "NVDA",
+    "forecast_time": "2026-06-05 09:00:00",
+    "news": [
+      {
+        "news_id": "NVDA-07",
+        "news_time": "2026-06-05 10:30:00",
+        "title": "NVDA update 7",
+        "text": "NVDA saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": -0.0019999999999999983,
+      "volume_change_pct": 0.11
+    },
+    "label": "UP"
+  },
+  {
+    "ticker": "NVDA",
+    "forecast_time": "2026-06-05 09:00:00",
+    "news": [
+      {
+        "news_id": "NVDA-08",
+        "news_time": "2026-06-05 08:30:00",
+        "title": "NVDA update 8",
+        "text": "NVDA saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": 0.0010000000000000009,
+      "volume_change_pct": 0.12000000000000001
+    },
+    "label": "HOLD"
+  },
+  {
+    "ticker": "NVDA",
+    "forecast_time": "2026-06-05 09:00:00",
+    "news": [
+      {
+        "news_id": "NVDA-09",
+        "news_time": "2026-06-05 09:15:00",
+        "title": "NVDA update 9",
+        "text": "NVDA saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": 0.004,
+      "volume_change_pct": 0.13
+    },
+    "label": "DOWN"
+  },
+  {
+    "ticker": "NVDA",
+    "forecast_time": "2026-06-05 09:00:00",
+    "news": [
+      {
+        "news_id": "NVDA-10",
+        "news_time": "2026-06-05 10:30:00",
+        "title": "NVDA update 10",
+        "text": "NVDA saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": 0.006999999999999999,
+      "volume_change_pct": 0.14
+    },
+    "label": "UP"
+  },
+  {
+    "ticker": "NVDA",
+    "forecast_time": "2026-06-05 09:00:00",
+    "news": [
+      {
+        "news_id": "NVDA-11",
+        "news_time": "2026-06-05 09:05:00",
+        "title": "NVDA update 11",
+        "text": "NVDA saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": 0.009999999999999998,
+      "volume_change_pct": 0.15000000000000002
+    },
+    "label": "DOWN"
+  },
+  {
+    "ticker": "NVDA",
+    "forecast_time": "2026-06-05 09:00:00",
+    "news": [
+      {
+        "news_id": "NVDA-12",
+        "news_time": "2026-06-05 08:30:00",
+        "title": "NVDA update 12",
+        "text": "NVDA saw notable trading momentum in the session."
+      }
+    ],
+    "price_features": {
+      "price_5d_return": 0.013000000000000001,
+      "volume_change_pct": 0.16
+    },
+    "label": "HOLD"
+  },
+  {
+    "ticker": "MSFT",
+    "forecast_time": "2026-06-06 09:00:00",
+    "news": [
+      {
+        "news_id": "MSFT-99",
+        "news_time": "bad-time",
+        "title": "Bad timestamp",
+        "text": " "
+      }
+    ],
+    "price_features": {
+      "price_5d_return": "x",
+      "volume_change_pct": 0.1
+    },
+    "label": "UNKNOWN"
+  },
+  {
+    "ticker": "GOOG",
+    "forecast_time": "2026-06-06 09:00:00",
+    "news": [
+      {
+        "news_id": "GOOG-100",
+        "news_time": "2026-06-05 08:00:00",
+        "title": "Clean",
+        "text": "  "
+      }
+    ],
+    "price_features": {
+      "price_5d_return": 0.1,
+      "volume_change_pct": 0.2
+    },
+    "label": "UP"
+  }
+]
