@@ -1,20 +1,47 @@
 # Agentic AI in SDLC
 
-## Building a Stock Trend Forecasting System from News with Evidence-Based Verification
+## Stock Trend Forecasting with Evidence-Based Verification
 
-### Geting Started
+This project builds a small, runnable prototype for forecasting stock direction from financial news while keeping evidence and temporal safety visible. The current codebase already includes the Week 1 baseline and the first Week 2 evidence/forecasting extension.
 
-1. Clone the repo
-2. Set up [OpenSpecs](https://github.com/Fission-AI/OpenSpec) in your environment
-3. Run `openspec init` and choose your IDEs
-4. Restart the IDE to apply the slash commands
+### Project Goal and Project Plan
 
-### Week 1 validation
+Build a faithful evidence-centric forecasting prototype that:
 
-Run the local prototype and its tests with:
+- filters out future-dated news,
+- keeps a deterministic loader/retriever contract,
+- extracts simple evidence signals from valid news,
+- produces a basic rule-based forecast direction and confidence.
+- The detailed project description is in the file [ChuDe1.pdf](/docs/ChuDe1.pdf) (`.md` version is the file [Do_an_cuoi_ki_Agentic_AI.md](/docs/Do_an_cuoi_ki_Agentic_AI.md))
+- The detailed project plan can be found in the file [project_plan.md](/docs/project_plan.md)
 
-- `python -m pytest`
-- `python src/main.py`
-- `python scripts/verify_week1.py`
+### Project structure
 
-The verification script runs the test suite, checks deterministic output across repeated passes, and writes the combined result to `outputs/week1_verification_output.json`.
+- `data/` — curated sample dataset used for local validation.
+- `src/` — loader, retriever, evidence extractor, and simple forecast model.
+- `tests/` — pytest coverage for the Week 1 baseline and Week 2 extension.
+- `outputs/` — generated validation outputs and reproducibility reports.
+- `openspec/changes/faithful-evidence-forecasting/` — OpenSpec proposal, design, spec, and task ledger for the current change.
+- `docs/` — project plan and assignment references.
+- `scripts/` — local verification helper for repeated validation.
+
+### Getting started
+
+1. Clone the repository.
+2. Install Python dependencies and run the tests with `python -m pytest`.
+3. Run the prototype with `python src/main.py`.
+4. Run the verification helper with `python scripts/verify_week1.py`.
+
+### Current project status
+
+- Week 1 baseline is implemented and verified: loader, temporal retriever, warnings, deterministic output, and tests.
+- Week 2 extension is now in progress: simple evidence extraction and a rule-based forecast model are implemented and covered by tests.
+- The system is currently functional, runnable, and testable.
+
+### Suggested workflow for the next iteration
+
+1. Review the current loader/retriever contract and keep it unchanged.
+2. Add or refine evidence extraction rules for stronger signal quality.
+3. Extend the forecast model with more explainable confidence logic.
+4. Re-run `python -m pytest` and confirm the pipeline remains deterministic.
+5. Update the OpenSpec notes only when the implementation milestone changes.

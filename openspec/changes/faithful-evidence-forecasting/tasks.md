@@ -12,23 +12,24 @@
 
 ## 2. Week 2 Implementation Tasks
 
-- [ ] 2.1 Reuse the verified Week 1 contract as the stable input/output foundation for evidence extraction and forecasting.
+- [x] 2.1 Reuse the verified Week 1 contract as the stable input/output foundation for evidence extraction and forecasting.
   - Acceptance: the Week 2 modules consume `valid_news`, `invalid_future_news`, and warnings without redefining the baseline schema.
-- [ ] 2.2 Implement a simple evidence extraction layer over `valid_news` and `cleaned_text`.
+- [x] 2.2 Implement a simple evidence extraction layer over `valid_news` and `cleaned_text`.
   - Acceptance: accepted news items are converted into evidence candidates that can be scored by a later rule-based module.
-- [ ] 2.3 Implement a rule-based forecasting baseline using evidence signals and `price_features`.
+- [x] 2.3 Implement a rule-based forecasting baseline using evidence signals and `price_features`.
   - Acceptance: the prototype returns a simple direction/confidence output that remains explainable and deterministic.
-- [ ] 2.4 Extend tests to cover evidence extraction, confidence baseline behavior, and preserved temporal safety.
+- [x] 2.4 Extend tests to cover evidence extraction, confidence baseline behavior, and preserved temporal safety.
   - Acceptance: tests validate the new Week 2 path without weakening current temporal leakage protections.
-- [ ] 2.5 Run the local validation path again and update the human review note for the next milestone.
+- [x] 2.5 Run the local validation path again and update the human review note for the next milestone.
   - Acceptance: the updated pipeline remains runnable, reproducible, and traceable in the OpenSpec ledger.
+  - Verified after the Week 2 forecasting addition: `python -m pytest` now passes 8 tests and the pipeline remains deterministic.
 
 ## 3. Quality Gates
 
 - [x] 3.1 Run local `pytest` for the Week 1 logic before any manual sign-off.
 - [x] 3.2 Verify the loader and retriever produce reproducible JSON output for the same sample input.
 - [x] 3.3 Confirm the OpenSpec task ledger contains the human review and approval note for traceability.
-- [ ] 3.4 Re-run the validation path after the Week 2 evidence and forecasting extension is added.
+- [x] 3.4 Re-run the validation path after the Week 2 evidence extraction extension is added.
 
 ## 4. Implementation Notes for Apply
 
