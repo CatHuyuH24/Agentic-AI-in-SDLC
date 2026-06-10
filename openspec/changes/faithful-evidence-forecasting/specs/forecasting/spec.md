@@ -48,6 +48,26 @@ The system SHALL expose a minimal end-to-end path that can be executed locally w
 - **THEN** the system SHALL produce a deterministic result set and a warning summary
 - **AND** the output SHALL be suitable for later evidence or forecasting modules
 
+### Requirement: The Week 1 contract is the stable foundation for Week 2
+
+The system SHALL preserve the existing canonical loader/retriever contract as the reusable base for Week 2 evidence extraction and forecasting work.
+
+#### Scenario: The baseline contract remains reusable
+
+- **WHEN** Week 2 modules are added
+- **THEN** they SHALL consume the current `valid_news`, `invalid_future_news`, and `warnings` structure instead of redefining the input contract
+- **AND** the temporal safety and warning behavior from Week 1 SHALL remain intact
+
+### Requirement: Evidence extraction and forecasting build on validated news only
+
+The system SHALL derive evidence and a simple forecast baseline from the accepted `valid_news` set, rather than from future-dated or malformed records.
+
+#### Scenario: Week 2 uses only safe evidence
+
+- **WHEN** evidence extraction or forecasting is executed
+- **THEN** only records that passed temporal validation SHALL be eligible for scoring
+- **AND** any invalid future-dated item SHALL remain visible in `invalid_future_news` and warnings for traceability
+
 ### Requirement: Review and reproducibility are part of the delivery path
 
 The system SHALL support human review, reproducible local tests, and traceable acceptance notes before the prototype is considered complete.
