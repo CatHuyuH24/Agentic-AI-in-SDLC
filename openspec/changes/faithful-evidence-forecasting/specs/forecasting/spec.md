@@ -1,78 +1,68 @@
-## ADDED Requirements
+# OpenSpec: Stock Forecasting & Faithfulness Specification
 
-### Requirement: Data ingestion and schema validation are deterministic
+This document defines the functional requirements and acceptance criteria for the stock movement forecasting system.
 
-The system SHALL normalize raw price/news records into the canonical Week 1 schema and SHALL reject malformed records early without crashing the pipeline.
+---
 
-The canonical input model SHALL contain:
+## 1. Baseline Requirements (Week 1 & 2 - Verified)
 
-- `ticker` (string)
-- `forecast_time` (timestamp string)
-- `news` (array of records with `news_id`, `news_time`, `title`, `text`)
-- `price_features` (object with `price_5d_return` and `volume_change_pct`)
-- `label` (one of `UP`, `DOWN`, `HOLD`)
+### Requirement: Deterministic Ingestion & Schema Validation (Week 1)
+The system SHALL normalize raw stock price and news records into a canonical schema. It SHALL reject malformed records early with warning messages while allowing the rest of the pipeline to continue.
+*   **Canonical Input fields**: `ticker`, `forecast_time`, `news` (array of `news_id`, `news_time`, `title`, `text`), `price_features` (`price_5d_return`, `volume_change_pct`), `label`.
+*   **Canonical Output fields**: `ticker`, `forecast_time`, `valid_news`, `invalid_future_news`, `warnings`.
 
-The canonical output model SHALL contain:
+#### Scenario: Malformed fields are warned and handled safely
+*   **GIVEN** a raw dataset containing both valid and malformed stock/news records
+*   **WHEN** the loader processes an input record containing missing fields, malformed timestamps, or invalid labels
+*   **THEN** the loader SHALL log a warning and continue processing other valid data points
+*   **AND** the output SHALL maintain the canonical format.
 
-- `ticker`
-- `forecast_time`
-- `valid_news`
-- `invalid_future_news`
-- `warnings`
+### Requirement: Temporal Filtering to Prevent Lookahead Leakage (Week 1)
+The system SHALL filter news to ensure that only items published strictly before the forecast time are used in predictions. All future items must be flagged.
 
-#### Scenario: Invalid input is handled safely
+#### Scenario: Future news items are filtered out
+*   **GIVEN** a forecast record with forecast_time `2026-06-03 09:00:00`
+*   **WHEN** retriever processes news item A at `2026-06-02 16:30:00` and news item B at `2026-06-03 09:05:00`
+*   **THEN** item A SHALL be placed in `valid_news`
+*   **AND** item B SHALL be placed in `invalid_future_news` with a leakage warning.
 
-- **WHEN** a record is missing `ticker`, `forecast_time`, `news_time`, `news_text`, `price_5d_return`, or `volume_change_pct`
-- **THEN** the loader SHALL mark the record invalid and log a warning
-- **AND** the pipeline SHALL continue with the remaining valid records
-- **AND** the output SHALL preserve the canonical `valid_news`, `invalid_future_news`, and `warnings` structure for downstream testing
+### Requirement: Lexicon Evidence Extraction & Rule-Based Forecast Engine (Week 2)
+The system SHALL extract evidence from the `valid_news` using a deterministic financial sentiment lexicon and execute a rule-based forecast prediction (UP/DOWN/HOLD) with confidence scores.
 
-### Requirement: Temporal filtering prevents future leakage
+#### Scenario: Rule-based forecasting on valid news
+*   **GIVEN** valid news items and price features
+*   **WHEN** the valid news contains sentiment keywords (e.g., "surge", "weak")
+*   **THEN** the evidence extractor SHALL output directional scores (UP/DOWN/HOLD)
+*   **AND** the model SHALL combine these with price features to yield a forecast prediction and confidence score (between 0.50 and 0.95).
 
-The system SHALL retain only news items whose publication time is strictly earlier than the forecast time, and SHALL classify all other items as invalid future news.
+---
 
-#### Scenario: Valid and invalid news are separated
+## 2. Faithfulness & Visualization Requirements (Week 3 - Verified)
 
-- **WHEN** the forecast time is 2026-06-03 09:00:00 and a news item is published at 2026-06-02 16:30:00
-- **THEN** the item SHALL be included in `valid_news`
-- **AND WHEN** another item is published at 2026-06-03 09:05:00
-- **THEN** that item SHALL be classified as `invalid_future_news`
+### Requirement: Base Faithfulness Metrics Calculation
+The system SHALL evaluate the faithfulness of its explanations by calculating three metrics:
+1.  **Temporal Validity**: Ratio of valid news items to total news items.
+    $$\text{Temporal Validity} = \frac{|\text{valid\_news}|}{|\text{valid\_news}| + |\text{invalid\_future\_news}|}$$
+2.  **Evidence Support**: Average score of evidence items matching the predicted market direction.
+3.  **Confidence Drop**: The reduction in prediction confidence when the cited evidence is masked or removed from the model's input text (counterfactual perturbation).
 
-### Requirement: The Week 1 pipeline is runnable and testable
+#### Scenario: Confidence Drop calculation on evidence removal
+*   **GIVEN** a forecast prediction is made on full input texts with confidence $C_{\text{orig}}$ (e.g., $0.80$)
+*   **WHEN** the cited evidence text is removed/perturbed to a neutral state by masking sentiment keywords with "note"
+*   **THEN** the system SHALL re-calculate the model confidence $C_{\text{pert}}$ on the perturbed input
+*   **AND** the confidence drop metric SHALL be calculated as:
+    $$\text{Confidence Drop} = \begin{cases} C_{\text{orig}} - C_{\text{pert}} & \text{if perturbed prediction matches original} \\ C_{\text{orig}} & \text{if prediction changes} \end{cases}$$
 
-The system SHALL expose a minimal end-to-end path that can be executed locally with the sample dataset and verified through `pytest`.
+### Requirement: Streamlit Visualization Dashboard MVP
+The system SHALL provide an interactive Streamlit-based dashboard to display predictions, warnings, and evidence faithfulness.
 
-#### Scenario: Local execution produces stable output
-
-- **WHEN** the sample dataset is loaded and the retriever runs
-- **THEN** the system SHALL produce a deterministic result set and a warning summary
-- **AND** the output SHALL be suitable for later evidence or forecasting modules
-
-### Requirement: The Week 1 contract is the stable foundation for Week 2
-
-The system SHALL preserve the existing canonical loader/retriever contract as the reusable base for Week 2 evidence extraction and forecasting work.
-
-#### Scenario: The baseline contract remains reusable
-
-- **WHEN** Week 2 modules are added
-- **THEN** they SHALL consume the current `valid_news`, `invalid_future_news`, and `warnings` structure instead of redefining the input contract
-- **AND** the temporal safety and warning behavior from Week 1 SHALL remain intact
-
-### Requirement: Evidence extraction and forecasting build on validated news only
-
-The system SHALL derive evidence and a simple forecast baseline from the accepted `valid_news` set, rather than from future-dated or malformed records.
-
-#### Scenario: Week 2 uses only safe evidence
-
-- **WHEN** evidence extraction or forecasting is executed
-- **THEN** only records that passed temporal validation SHALL be eligible for scoring
-- **AND** any invalid future-dated item SHALL remain visible in `invalid_future_news` and warnings for traceability
-
-### Requirement: Review and reproducibility are part of the delivery path
-
-The system SHALL support human review, reproducible local tests, and traceable acceptance notes before the prototype is considered complete.
-
-#### Scenario: Verification is recorded for sign-off
-
-- **WHEN** the prototype is validated locally with `pytest`
-- **THEN** the result SHALL be documented in the OpenSpec task ledger for traceability and approval
+#### Scenario: Interactive analysis on the dashboard
+*   **GIVEN** a financial analyst launches the Streamlit dashboard
+*   **WHEN** the analyst selects a specific ticker (AAPL, TSLA, NVDA) and forecast record index
+*   **THEN** the dashboard SHALL display:
+    *   **Selected Ticker and Time**: Details of the current prediction context.
+    *   **Prediction and Confidence**: The forecast direction (UP/DOWN/HOLD) and associated confidence score.
+    *   **Evidence Table**: A table containing news titles, publication timestamps, polarities, and support scores.
+    *   **Temporal Leakage Panel**: A clear alert panel listing all filtered `invalid_future_news` and data validation warnings.
+    *   **Faithfulness Metrics**: Numerical display of Temporal Validity, Evidence Support, and Confidence Drop.
+    *   **Confidence Drop Plot**: An interactive Plotly bar chart showing the comparison between original confidence and perturbed confidence (representing necessity of evidence).

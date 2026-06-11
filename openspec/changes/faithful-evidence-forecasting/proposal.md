@@ -1,59 +1,69 @@
+# OpenSpec Proposal: Stock Forecasting & Faithfulness
+
 ## Why
 
-The Week 1 baseline is now in place: the repository already contains a runnable loader, a temporal retriever, deterministic warning handling, a curated sample dataset, and local `pytest` coverage. The verified state is stable enough to reuse as the contract foundation for Week 2, where the next work is evidence extraction, simple rule-based forecasting, and confidence-based faithfulness checks.
+The baseline pipeline from Weeks 1 and 2 is fully in place (ingestion, temporal safety filtering, lexicons, rule-based forecasting). 
+To make the system transparent and reliable, Week 3 implements **Explanation Faithfulness** metrics (measuring if predictions are genuinely driven by the evidence cited) and an **Interactive Streamlit Visualization Dashboard MVP** to easily analyze predictions, warnings, news evidence, and faithfulness metrics.
+
+---
 
 ## What Changes
 
-- Preserve the validated Week 1 contract for data loading, temporal safety, warnings, and deterministic output.
-- Extend the OpenSpec package to describe the next Week 2 work: evidence extraction from `valid_news`, rule-based sentiment scoring, and a baseline forecast path.
-- Keep the implementation limited to the prototype stage so it remains runnable, testable, and traceable for the academic project.
-- Continue the human review gate so the Week 2 work is verified before it is considered complete.
+- Preserved the validated ingestion, temporal retriever, and lexicon forecasting components.
+- Added a faithfulness evaluation engine (`src/faithfulness_metrics.py`) computing:
+  - **Temporal Validity**: ratio of valid pre-forecast news to total news.
+  - **Evidence Support**: match score between evidence polarity and prediction direction.
+  - **Confidence Drop**: impact on confidence when sentiment words are perturbed.
+- Added an interactive Streamlit UI dashboard (`src/dashboard.py`) integrating the data loader, temporal retriever, forecast model, and faithfulness metrics.
+- Added unit and integration tests under `tests/` verifying the correctness of metrics, perturbation logic, and the dashboard.
+- Maintained a deterministic, local-run, non-LLM implementation.
 
-## Scope (Week 1 Baseline + Week 2 Extension)
+---
+
+## Scope (Week 1, 2, and 3 - Verified)
 
 ### In Scope
-
-- The existing Week 1 pipeline for AAPL, TSLA, and NVDA: canonical schema, loader, retriever, warning handling, and deterministic output.
-- Reuse of the current sample dataset and the `valid_news` / `invalid_future_news` contract as the stable foundation for later modules.
-- Week 2 evidence extraction and simple lexicon-based scoring over the accepted news items.
-- Week 2 rule-based forecasting and confidence baseline using `price_features` plus extracted evidence.
-- Local verification with `pytest` and human review notes before sign-off.
+- **Data Ingestion & Cleaning**: Normalizing stock data and news feeds safely.
+- **Lookahead Filtering**: Isolating post-forecast news strictly to block leakage.
+- **Lexicon Forecasting**: Sentiment extraction and rule-based prediction.
+- **Faithfulness Metrics**: Mathematical formulations for temporal safety, support alignment, and counterfactual perturbation.
+- **Streamlit Dashboard MVP**: A single-page interactive UI for ticker filtering, record selection, KPI cards, evidence tables, lookahead alerts, and a Plotly bar chart comparison of original vs perturbed confidence scores.
+- **Test Coverage**: 36 unit/smoke tests verifying the whole system end-to-end.
 
 ### Out of Scope
+- Production databases, live web scraping.
+- Deep Learning (FinBERT) model training (deferred to Week 4).
+- Production trading execution.
 
-- Real-time news ingestion, GPU training, or production trading logic.
-- Full dashboard polish or a finished forecasting system beyond the prototype stage.
-- Any step that breaks the Week 1 temporal safety guarantee or the current warning contract.
+---
 
 ## Current Verified State
 
-- The current prototype is runnable and deterministic.
-- Local `pytest` currently reports 3 passing tests for the Week 1 path.
-- The existing loader/retriever contract is the correct base for the Week 2 evidence and forecasting modules.
+- Ingestion, retriever, lexicon, model, faithfulness metrics, and dashboard are fully functional.
+- Local `pytest` suite runs and passes 36/36 tests successfully.
+- Main entry point `python src/main.py` processes all 38 dataset records cleanly, outputting `outputs/week3_pipeline_output.json` (canonical JSON structure) and `outputs/faithfulness_results.csv` (CSV summary).
+- The dashboard starts cleanly and allows selecting tickers and records dynamically.
+
+---
 
 ## User Personas
 
-- Research and Spec Reviewer: needs a defensible prototype, explicit temporal safety, and a clear Week 2 extension plan.
-- Data and Integration Operator: needs stable ingestion, normalized schema output, and predictable warnings.
-- QA Reviewer: needs reliable tests for temporal leakage, malformed records, and deterministic output throughout the next phase.
+- **Financial Analyst / Spec Reviewer**: Needs a transparent view of why the model predicted a direction and wants to verify if the cited evidence actually influenced the model's confidence.
+- **Data & QA Engineer**: Needs to ensure future-dated news is rejected, warnings are raised for bad records, and metrics are calculated mathematically.
+
+---
 
 ## Rules and Review Gates
 
-- The Week 1 contract SHALL remain the stable input/output foundation for Week 2.
-- The retriever SHALL continue to accept only `news_time < forecast_time` and SHALL classify `news_time >= forecast_time` as invalid future news.
-- Any malformed or missing field SHALL still be warned about and handled safely.
-- Week 2 modules SHALL build on the accepted `valid_news` set rather than reintroducing future-dated evidence.
+- **Rule 1**: The temporal safety rule (`news_time < forecast_time`) remains the absolute firewall.
+- **Rule 2**: Evidence and metrics calculations must use the outputs from retriever/model.
+- **Rule 3**: All new metric calculation and dashboard integration must pass local tests.
 
-## Dependencies and Assumptions
-
-- The existing sample dataset and loader/retriever output are the base contract for upcoming evidence and forecasting modules.
-- The repository structure under `data/`, `src/`, `tests/`, and `outputs/` remains the implementation boundary for this change.
-- The Week 2 work SHALL be documented incrementally without discarding the Week 1 validation path.
+---
 
 ## Canonical Data Structures
 
-### Input model (raw record -> canonical JSON)
-
+### Input model (canonical JSON)
 ```json
 {
   "ticker": "AAPL",
@@ -74,41 +84,41 @@ The Week 1 baseline is now in place: the repository already contains a runnable 
 }
 ```
 
-### Output model (loader + retriever contract)
-
+### Output model (with Week 3 Faithfulness Metrics)
 ```json
 {
   "ticker": "AAPL",
   "forecast_time": "2025-03-12 09:00:00",
-  "valid_news": [
+  "prediction": "DOWN",
+  "confidence": 0.72,
+  "evidence": [
     {
       "news_id": "0001",
-      "news_time": "2025-03-11 08:30:00",
       "title": "Apple reports weak iPhone sales in China",
-      "text": "Apple reports weak iPhone sales in China after softer demand.",
-      "cleaned_text": "apple reports weak iphone sales in china after softer demand"
+      "direction": "DOWN",
+      "score": 0.73,
+      "evidence_terms": {
+        "positive": [],
+        "negative": ["weak"]
+      },
+      "rationale": "negative terms"
     }
   ],
-  "invalid_future_news": [],
-  "warnings": []
+  "warnings": [],
+  "faithfulness": {
+    "temporal_validity": 1.0,
+    "evidence_support": 1.0,
+    "confidence_drop": 0.22,
+    "is_faithful": true
+  }
 }
 ```
 
-The Week 1 implementation SHALL remain the stable contract for data loading, temporal filtering, and local tests, while Week 2 adds evidence extraction and forecasting on top of this base.
+---
 
 ## Capabilities
 
-### New Capabilities
-
-- `forecasting`: end-to-end prototype support for evidence-based stock movement forecasting, temporal validity checks, and faithfulness analysis.
-- `evidence_pipeline`: reusable evidence extraction and confidence baseline capabilities built on the Week 1 contract.
-
-### Modified Capabilities
-
-- The existing loader/retriever path is extended rather than replaced, preserving deterministic behavior and warning-based validation.
-
-## Impact
-
-- Planning artifacts under `openspec/changes/faithful-evidence-forecasting/` remain the source of truth for the next phase.
-- Future implementation under `src/`, `tests/`, and `data/` should build on the current Week 1 contract rather than duplicate it.
-- Alignment with the rubric in `docs/Do_an_cuoi_ki_Agentic_AI.md` and the project execution plan in `docs/project_plan.md` remains intact for the Week 2 path.
+### Completed Capabilities
+- `faithfulness_evaluation`: Programmatic calculation of Evidence Support, Temporal Validity, and Confidence Drop (via masking).
+- `dashboard`: Streamlit UI allowing interactive selection of assets, prediction display, leakage warnings, and Plotly visualization.
+- `forecasting`: Updated output JSON to include the nested `faithfulness` metric results.
