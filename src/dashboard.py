@@ -195,7 +195,7 @@ def main() -> None:
         ))
         fig.update_layout(
             title="Comparison of Model Confidence Scores",
-            ylabel="Confidence Score",
+            yaxis_title="Confidence Score",
             yaxis_range=[0, 1.05],
             height=350,
             margin=dict(l=20, r=20, t=40, b=20),
