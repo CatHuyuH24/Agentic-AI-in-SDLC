@@ -1,0 +1,18 @@
+# GPU / deep-learning dependencies for Week 4 FinBERT training on Google Colab (T4).
+# Install with:
+#   pip install -r requirements-gpu.txt
+#
+# These are NOT required for the rule-based pipeline (requirements.txt).
+# The src/ modules fall back gracefully when torch/transformers are absent.
+
+torch==2.3.1
+torchvision==0.18.1
+torchaudio==2.3.1
+
+transformers==4.41.2
+tokenizers==0.19.1
+accelerate==0.30.1
+
+scikit-learn==1.5.0
+numpy==1.26.4
+pandas==2.2.2

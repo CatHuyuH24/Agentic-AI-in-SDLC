@@ -1,0 +1,2 @@
+# This file keeps the models/ directory tracked by git.
+# Trained model checkpoints (*.pt, *.pkl) are excluded via .gitignore.
