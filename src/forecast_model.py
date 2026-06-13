@@ -20,8 +20,14 @@ def forecast_from_news(news_items: list[dict[str, Any]], price_features: dict[st
     down_score = sum(item["score"] for item in evidence if item["direction"] == "DOWN")
     hold_score = sum(item["score"] for item in evidence if item["direction"] == "HOLD")
 
-    price_return = float(price_features.get("price_5d_return", 0.0) or 0.0)
-    volume_change = float(price_features.get("volume_change_pct", 0.0) or 0.0)
+    try:
+        price_return = float(price_features.get("price_5d_return", 0.0) or 0.0)
+    except (TypeError, ValueError):
+        price_return = 0.0
+    try:
+        volume_change = float(price_features.get("volume_change_pct", 0.0) or 0.0)
+    except (TypeError, ValueError):
+        volume_change = 0.0
 
     if up_score > down_score and up_score >= hold_score:
         prediction = "UP"
