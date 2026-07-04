@@ -20,7 +20,7 @@ import copy
 from typing import Any
 
 from evidence_extractor import NEGATIVE_TERMS, POSITIVE_TERMS, extract_evidence
-from forecast_model import forecast_from_news
+from forecast_model import forecast_from_news, run_forecast
 
 # Placeholder token used when masking sentiment keywords.
 _NEUTRAL_TOKEN = "note"
@@ -167,7 +167,11 @@ def calculate_confidence_drop(
 # Convenience: full faithfulness block for a single retrieval result
 # ---------------------------------------------------------------------------
 
-def evaluate_faithfulness(retrieval_result: dict[str, Any], price_features: dict[str, Any]) -> dict[str, Any]:
+def evaluate_faithfulness(
+    retrieval_result: dict[str, Any],
+    price_features: dict[str, Any],
+    model: str = "rule",
+) -> dict[str, Any]:
     """Compute all three faithfulness metrics for one retrieval result.
 
     This is the single entry point used by ``main.py`` and tests.  It
@@ -177,6 +181,10 @@ def evaluate_faithfulness(retrieval_result: dict[str, Any], price_features: dict
         retrieval_result: Output of ``retriever.retrieve()``, containing
                           ``valid_news`` and ``invalid_future_news``.
         price_features:   Price feature dict from the raw record.
+        model:            Model backend to use for the primary forecast
+                          (``"rule"`` or ``"finbert"``).  The counterfactual
+                          confidence-drop calculation always uses rule-based
+                          for determinism and explainability.
 
     Returns:
         Dict with keys ``temporal_validity``, ``evidence_support``,
@@ -188,13 +196,14 @@ def evaluate_faithfulness(retrieval_result: dict[str, Any], price_features: dict
 
     temporal_validity = calculate_temporal_validity(len(valid_news), len(invalid_news))
 
-    # Run the forecast on the valid news to get prediction + evidence.
-    forecast = forecast_from_news(valid_news, price_features)
+    # Run the forecast on the valid news using the selected backend.
+    forecast = run_forecast(valid_news, price_features, model=model)
     evidence = forecast.get("evidence", [])
     prediction = forecast.get("prediction", "HOLD")
 
     evidence_support = calculate_evidence_support(evidence, prediction)
 
+    # Confidence drop always uses rule-based (deterministic, explainable).
     drop_detail = calculate_confidence_drop(valid_news, price_features)
 
     return {

@@ -1,4 +1,10 @@
-"""Streamlit dashboard for visualizing stock movement forecasts and explanation faithfulness."""
+"""Streamlit dashboard for visualizing stock movement forecasts and explanation faithfulness.
+
+Week 4 additions:
+- Model selector sidebar toggle (Rule-Based / FinBERT)
+- Model Comparison panel (side-by-side rule vs FinBERT results)
+- Info banner when FinBERT checkpoint is absent
+"""
 
 import os
 import sys
@@ -16,6 +22,18 @@ import plotly.graph_objects as go
 from loader import load_dataset
 from retriever import retrieve
 from faithfulness_metrics import evaluate_faithfulness
+from forecast_model import (
+    forecast_from_news,
+    forecast_from_news_finbert,
+    run_forecast,
+    _checkpoint_available,
+)
+
+_FINBERT_AVAILABLE = _checkpoint_available()
+
+
+def _pred_emoji(pred: str) -> str:
+    return {"UP": "🟢 UP", "DOWN": "🔴 DOWN"}.get(pred, "⚪ HOLD")
 
 
 def main() -> None:
@@ -54,6 +72,13 @@ def main() -> None:
             border-radius: 4px;
             margin-bottom: 16px;
         }
+        /* Comparison table styling */
+        .compare-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 16px;
+            color: white;
+        }
     </style>
     """, unsafe_allow_html=True)
 
@@ -70,9 +95,24 @@ def main() -> None:
     # Tickers list
     tickers = sorted(list(set(r.get("ticker", "") for r in records if r.get("ticker"))))
 
-    # Sidebar controls
+    # ── Sidebar controls ────────────────────────────────────────────────────
     st.sidebar.header("Controls")
     selected_ticker = st.sidebar.selectbox("Filter Ticker", ["All"] + tickers)
+
+    # Week 4: Model selector
+    st.sidebar.markdown("---")
+    st.sidebar.subheader("🤖 Model Selection")
+    model_options = ["Rule-Based", "FinBERT"]
+    selected_model_label = st.sidebar.radio(
+        "Forecast Model",
+        model_options,
+        index=0,
+        help="FinBERT requires the trained checkpoint in models/finbert_fusion.pt",
+    )
+    selected_model = "rule" if selected_model_label == "Rule-Based" else "finbert"
+
+    if not _FINBERT_AVAILABLE:
+        st.sidebar.info("ℹ️ FinBERT checkpoint not found. FinBERT selections fall back to Rule-Based automatically.")
 
     # Filter records by ticker
     if selected_ticker == "All":
@@ -93,14 +133,24 @@ def main() -> None:
     selected_idx = record_options.index(selected_option)
     record = filtered_records[selected_idx]
 
-    # Run Pipeline on the selected record
+    # ── Run Pipeline on the selected record ─────────────────────────────────
     retrieval = retrieve(record)
     price_features = record.get("price_features", {})
-    faith_result = evaluate_faithfulness(retrieval, price_features)
+
+    # Use the selected model via dispatcher
+    faith_result = evaluate_faithfulness(retrieval, price_features, model=selected_model)
     forecast = faith_result["forecast"]
     detail = faith_result["confidence_drop_detail"]
 
-    # KPI Columns
+    # ── Week 4: FinBERT checkpoint banner ───────────────────────────────────
+    if not _FINBERT_AVAILABLE:
+        st.info(
+            "ℹ️ **FinBERT checkpoint not found** — showing rule-based results only. "
+            "Train the model via `notebooks/week4_finbert_training.ipynb` and place "
+            "`models/finbert_fusion.pt` in the project root to enable FinBERT inference."
+        )
+
+    # ── KPI Columns ─────────────────────────────────────────────────────────
     st.markdown('<div class="section-header">Prediction Context & KPIs</div>', unsafe_allow_html=True)
     col_meta1, col_meta2, col_meta3 = st.columns(3)
     with col_meta1:
@@ -112,17 +162,9 @@ def main() -> None:
 
     col1, col2, col3, col4, col5 = st.columns(5)
 
-    # Style prediction indicator color
     pred = forecast["prediction"]
-    if pred == "UP":
-        pred_color = "🟢 UP"
-    elif pred == "DOWN":
-        pred_color = "🔴 DOWN"
-    else:
-        pred_color = "⚪ HOLD"
-
     with col1:
-        st.metric("Forecast Direction", pred_color)
+        st.metric("Forecast Direction", _pred_emoji(pred))
     with col2:
         st.metric("Prediction Confidence", f"{forecast['confidence']:.2%}")
     with col3:
@@ -143,7 +185,6 @@ def main() -> None:
     invalid_news = retrieval.get("invalid_future_news", [])
     if invalid_news:
         st.error(f"🚨 **Lookahead Temporal Leakage Detected!** ({len(invalid_news)} future-dated news items filtered)")
-        # Show the table of leaked articles
         leakage_df = pd.DataFrame([
             {
                 "News ID": item.get("news_id"),
@@ -154,7 +195,7 @@ def main() -> None:
         ])
         st.dataframe(leakage_df, use_container_width=True)
 
-    # Evidence Table
+    # ── Evidence Table ───────────────────────────────────────────────────────
     st.markdown('<div class="section-header">News Evidence Breakdown</div>', unsafe_allow_html=True)
     evidence_items = forecast.get("evidence", [])
     if evidence_items:
@@ -174,7 +215,58 @@ def main() -> None:
     else:
         st.info("No valid news items were extracted as directional evidence.")
 
-    # Plotly visualization comparison
+    # ── Week 4: Model Comparison Panel ──────────────────────────────────────
+    st.markdown('<div class="section-header">🤖 Model Comparison: Rule-Based vs FinBERT</div>', unsafe_allow_html=True)
+
+    if _FINBERT_AVAILABLE:
+        valid_news = retrieval.get("valid_news", [])
+        rb_result  = forecast_from_news(valid_news, price_features)
+        fb_result  = forecast_from_news_finbert(valid_news, price_features)
+
+        cmp_col1, cmp_col2 = st.columns(2)
+        with cmp_col1:
+            st.markdown("**Rule-Based Model**")
+            rb_pred = rb_result["prediction"]
+            st.metric("Prediction", _pred_emoji(rb_pred))
+            st.metric("Confidence", f"{rb_result['confidence']:.2%}")
+
+        with cmp_col2:
+            st.markdown("**FinBERT Fusion Model**")
+            fb_pred = fb_result["prediction"]
+            st.metric("Prediction", _pred_emoji(fb_pred))
+            st.metric("Confidence", f"{fb_result['confidence']:.2%}")
+
+        # Agreement indicator
+        if rb_pred == fb_pred:
+            st.success(f"✅ Both models agree: **{rb_pred}**")
+        else:
+            st.warning(f"⚡ Models disagree — Rule-Based: **{rb_pred}** | FinBERT: **{fb_pred}**")
+
+        # Comparison bar chart
+        fig_cmp = go.Figure(data=[
+            go.Bar(name="Rule-Based", x=["Rule-Based", "FinBERT"], y=[rb_result["confidence"], fb_result["confidence"]],
+                   marker_color=["#6366F1", "#EC4899"], text=[f"{rb_result['confidence']:.2%}", f"{fb_result['confidence']:.2%}"],
+                   textposition="auto")
+        ])
+        fig_cmp.update_layout(
+            title="Confidence Comparison: Rule-Based vs FinBERT",
+            yaxis_title="Confidence Score",
+            yaxis_range=[0, 1.05],
+            height=300,
+            margin=dict(l=20, r=20, t=40, b=20),
+            plot_bgcolor="rgba(0,0,0,0)",
+            paper_bgcolor="rgba(0,0,0,0)",
+            showlegend=False,
+        )
+        st.plotly_chart(fig_cmp, use_container_width=True)
+    else:
+        st.info(
+            "ℹ️ **FinBERT checkpoint not found** — comparison panel unavailable. "
+            "Run `notebooks/week4_finbert_training.ipynb` on Google Colab (T4) "
+            "and place `models/finbert_fusion.pt` in the project root to enable this panel."
+        )
+
+    # ── Plotly counterfactual visualization ─────────────────────────────────
     st.markdown('<div class="section-header">Counterfactual Masking: Original vs. Perturbed Confidence</div>', unsafe_allow_html=True)
     col_chart, col_explain = st.columns([2, 1])
 

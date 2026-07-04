@@ -1,3 +1,10 @@
 node_modules
 .pytest_cache
 __pycache__
+
+# Model checkpoints — download separately; see README
+models/*.pt
+models/*.pkl
+
+# Notebook checkpoints
+.ipynb_checkpoints/
