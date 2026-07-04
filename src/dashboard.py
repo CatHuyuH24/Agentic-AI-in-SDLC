@@ -174,6 +174,15 @@ def main() -> None:
     with col5:
         st.metric("Confidence Drop", f"{faith_result['confidence_drop']:.2%}")
 
+    st.markdown('<div class="section-header">Advanced Faithfulness Diagnostics</div>', unsafe_allow_html=True)
+    adv_col1, adv_col2, adv_col3 = st.columns(3)
+    with adv_col1:
+        st.metric("Counterevidence Coverage", f"{faith_result['counterevidence_coverage']:.2%}")
+    with adv_col2:
+        st.metric("Market Regime", faith_result['market_regime'].title())
+    with adv_col3:
+        st.metric("Market Consistency", f"{faith_result['market_consistency']:.2%}")
+
     # Faithfulness banner
     is_faithful = detail["is_faithful"]
     if is_faithful:

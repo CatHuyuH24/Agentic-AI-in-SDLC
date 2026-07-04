@@ -22,6 +22,53 @@ from typing import Any
 from evidence_extractor import NEGATIVE_TERMS, POSITIVE_TERMS, extract_evidence
 from forecast_model import forecast_from_news, run_forecast
 
+
+def calculate_counterevidence_coverage(evidence: list[dict[str, Any]], prediction: str) -> float:
+    """Return how much the evidence contains both support and opposition.
+
+    A score of 1.0 means the evidence contains at least one supporting item and
+    at least one opposing item for the chosen prediction; 0.0 means no opposing
+    evidence was detected.
+    """
+    if not evidence:
+        return 0.0
+
+    supporting = [item for item in evidence if item.get("direction") == prediction]
+    opposing = [item for item in evidence if item.get("direction") != prediction and item.get("direction") in {"UP", "DOWN", "HOLD"}]
+    if not supporting or not opposing:
+        return 0.0
+    return round(1.0, 4)
+
+
+def calculate_market_consistency(evidence: list[dict[str, Any]], price_features: dict[str, Any]) -> dict[str, Any]:
+    """Classify the market regime and score alignment between evidence and regime."""
+    try:
+        price_return = float(price_features.get("price_5d_return", 0.0) or 0.0)
+        volume_change = float(price_features.get("volume_change_pct", 0.0) or 0.0)
+    except (TypeError, ValueError):
+        price_return = 0.0
+        volume_change = 0.0
+
+    if price_return > 0.005 and volume_change > 0.0:
+        regime = "bull"
+    elif price_return < -0.005 and volume_change < 0.0:
+        regime = "bear"
+    else:
+        regime = "sideways"
+
+    if not evidence:
+        return {"regime": regime, "consistency": 0.0}
+
+    evidence_directions = {item.get("direction") for item in evidence if item.get("direction") in {"UP", "DOWN", "HOLD"}}
+    if regime == "bull":
+        consistency = 1.0 if "UP" in evidence_directions else 0.5
+    elif regime == "bear":
+        consistency = 1.0 if "DOWN" in evidence_directions else 0.5
+    else:
+        consistency = 1.0 if "HOLD" in evidence_directions or not evidence_directions else 0.5
+
+    return {"regime": regime, "consistency": round(consistency, 4)}
+
 # Placeholder token used when masking sentiment keywords.
 _NEUTRAL_TOKEN = "note"
 
@@ -202,6 +249,8 @@ def evaluate_faithfulness(
     prediction = forecast.get("prediction", "HOLD")
 
     evidence_support = calculate_evidence_support(evidence, prediction)
+    counterevidence_coverage = calculate_counterevidence_coverage(evidence, prediction)
+    market_consistency = calculate_market_consistency(evidence, price_features)
 
     # Confidence drop always uses rule-based (deterministic, explainable).
     drop_detail = calculate_confidence_drop(valid_news, price_features)
@@ -212,4 +261,7 @@ def evaluate_faithfulness(
         "confidence_drop": drop_detail["confidence_drop"],
         "confidence_drop_detail": drop_detail,
         "forecast": forecast,
+        "counterevidence_coverage": counterevidence_coverage,
+        "market_consistency": market_consistency["consistency"],
+        "market_regime": market_consistency["regime"],
     }

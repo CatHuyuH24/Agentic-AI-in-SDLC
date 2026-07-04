@@ -59,6 +59,9 @@ def _build_combined_record(
             "evidence_support": faithfulness["faithfulness"]["evidence_support"],
             "confidence_drop": faithfulness["faithfulness"]["confidence_drop"],
             "is_faithful": faithfulness["faithfulness"]["confidence_drop_detail"]["is_faithful"],
+            "counterevidence_coverage": faithfulness["faithfulness"].get("counterevidence_coverage", 0.0),
+            "market_consistency": faithfulness["faithfulness"].get("market_consistency", 0.0),
+            "market_regime": faithfulness["faithfulness"].get("market_regime", "sideways"),
         },
     }
 
@@ -91,6 +94,7 @@ def _write_single_model_outputs(results: list[dict], label: str) -> None:
     csv_fields = [
         "ticker", "forecast_time", "label", "prediction", "confidence",
         "temporal_validity", "evidence_support", "confidence_drop", "is_faithful",
+        "counterevidence_coverage", "market_consistency", "market_regime",
         "valid_news_count", "invalid_future_news_count",
     ]
     with csv_path.open("w", newline="", encoding="utf-8") as fh:
@@ -107,6 +111,9 @@ def _write_single_model_outputs(results: list[dict], label: str) -> None:
                 "evidence_support": rec["faithfulness"]["evidence_support"],
                 "confidence_drop": rec["faithfulness"]["confidence_drop"],
                 "is_faithful": rec["faithfulness"]["is_faithful"],
+                "counterevidence_coverage": rec["faithfulness"].get("counterevidence_coverage", 0.0),
+                "market_consistency": rec["faithfulness"].get("market_consistency", 0.0),
+                "market_regime": rec["faithfulness"].get("market_regime", "sideways"),
                 "valid_news_count": rec["valid_news_count"],
                 "invalid_future_news_count": rec["invalid_future_news_count"],
             }

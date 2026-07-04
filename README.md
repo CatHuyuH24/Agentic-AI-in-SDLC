@@ -35,7 +35,9 @@ Build a faithful evidence-centric forecasting prototype that:
 ### Current project status
 
 - Week 1 baseline is implemented and verified: loader, temporal retriever, warnings, deterministic output, and tests.
-- Week 2 extension is now in progress: simple evidence extraction and a rule-based forecast model are implemented and covered by tests.
+- Week 2–3 functionality is implemented and verified: evidence extraction, rule-based forecasting, faithfulness evaluation, and the dashboard workflow.
+- Week 4 compatibility is present through the FinBERT dispatcher and graceful checkpoint fallback.
+- Week 5 advanced faithfulness diagnostics are implemented: counterevidence coverage, market regime classification, and market consistency scoring are now exposed in the dashboard and batch outputs.
 - The system is currently functional, runnable, and testable.
 
 ### Suggested workflow for the next iteration
