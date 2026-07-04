@@ -57,3 +57,61 @@ def load_record(path: str | Path = DEFAULT_DATASET, index: int = 0) -> dict[str,
     """Load a single record by positional index from the dataset."""
     records = load_dataset(path)
     return records[index]
+
+def load_corpus_csv(path: str | Path) -> list[dict[str, Any]]:
+    import pandas as pd
+    import math
+    df = pd.read_csv(path)
+    
+    # We group by forecast_time and ticker to collect all news
+    records = []
+    index = 1
+    
+    # Actually, the python structure for retriever expects list of dicts.
+    for _, row in df.iterrows():
+        # But wait, in fetch_real_data.py, we created one row per news.
+        # No, wait, in fetch_real_data.py, we joined price and news such that there's 1 row per news,
+        # but multiple rows could have the same ticker and forecast_time.
+        # Wait, the retriever expects a list of news inside the record!
+        pass
+        
+    grouped = df.groupby(['ticker', 'forecast_time', 'price_5d_return', 'volume_change_pct', 'label'])
+    
+    for name, group in grouped:
+        ticker, forecast_time, price_5d_return, volume_change_pct, label = name
+        
+        news_data = []
+        for _, n_row in group.iterrows():
+            news_data.append({
+                "news_id": f"N-{ticker}-{index}-{len(news_data)}",
+                "news_time": n_row['news_time'],
+                "raw_title": n_row['news_title'],
+                "cleaned_text": n_row['cleaned_text']
+            })
+            
+        record = {
+            "ticker": ticker,
+            "forecast_time": forecast_time,
+            "news": news_data,
+            "price_features": {
+                "price_5d_return": float(price_5d_return),
+                "volume_change_pct": float(volume_change_pct)
+            },
+            "label": label
+        }
+        
+        # We need to normalize it using existing schema
+        normalized_record = normalize_record(record, index)
+        records.append({
+            "ticker": normalized_record["ticker"],
+            "forecast_time": normalized_record["forecast_time"],
+            "news": normalized_record["news"],
+            "price_features": normalized_record["price_features"],
+            "label": normalized_record["label"],
+            "warnings": normalized_record["warnings"],
+            "_record_index": index,
+            "_forecast_dt": normalized_record.get("_forecast_dt"),
+        })
+        index += 1
+        
+    return records
