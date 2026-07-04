@@ -24,7 +24,13 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import sys
 from pathlib import Path
+
+# Add the directory containing this script to python path
+current_dir = Path(__file__).resolve().parent
+if str(current_dir) not in sys.path:
+    sys.path.insert(0, str(current_dir))
 
 from loader import DEFAULT_DATASET, load_dataset
 from retriever import retrieve
@@ -193,7 +199,14 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    raw_records = load_dataset(DEFAULT_DATASET)
+    csv_path = Path("data/financial_corpus.csv")
+    if csv_path.exists():
+        from loader import load_corpus_csv
+        print(f"Loading data from {csv_path}...")
+        raw_records = load_corpus_csv(csv_path)
+    else:
+        print("Warning: data/financial_corpus.csv not found, falling back to sample_dataset.json")
+        raw_records = load_dataset(DEFAULT_DATASET)
 
     if args.model == "both":
         _run_both_models(raw_records)
