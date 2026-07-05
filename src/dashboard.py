@@ -4,6 +4,8 @@ Week 4 additions:
 - Model selector sidebar toggle (Rule-Based / FinBERT)
 - Model Comparison panel (side-by-side rule vs FinBERT results)
 - Info banner when FinBERT checkpoint is absent
+
+Figure helpers (build_*_fig) can be imported headlessly by scripts/export_figures.py.
 """
 
 import os
@@ -15,28 +17,170 @@ current_dir = Path(__file__).resolve().parent
 if str(current_dir) not in sys.path:
     sys.path.insert(0, str(current_dir))
 
-import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 
-from loader import load_dataset, load_corpus_csv
-from retriever import retrieve
-from faithfulness_metrics import evaluate_faithfulness
-from forecast_model import (
-    forecast_from_news,
-    forecast_from_news_finbert,
-    run_forecast,
-    _checkpoint_available,
-)
+# ---------------------------------------------------------------------------
+# Standalone figure builder helpers
+# ---------------------------------------------------------------------------
 
-_FINBERT_AVAILABLE = _checkpoint_available()
+def build_prediction_distribution_fig(df: pd.DataFrame) -> go.Figure:
+    """Bar chart of prediction label distribution across all records.
 
+    Args:
+        df: DataFrame with at least a ``prediction`` column.
+
+    Returns:
+        A :class:`plotly.graph_objects.Figure`.
+    """
+    counts = df["prediction"].value_counts().reset_index()
+    counts.columns = ["prediction", "count"]
+    color_map = {"UP": "#22C55E", "DOWN": "#EF4444", "HOLD": "#94A3B8"}
+    colors = [color_map.get(p, "#6366F1") for p in counts["prediction"]]
+    fig = go.Figure(data=[
+        go.Bar(
+            x=counts["prediction"],
+            y=counts["count"],
+            marker_color=colors,
+            text=counts["count"],
+            textposition="auto",
+        )
+    ])
+    fig.update_layout(
+        title="Prediction Distribution Across All Records",
+        xaxis_title="Predicted Direction",
+        yaxis_title="Number of Records",
+        height=500,
+        margin=dict(l=40, r=40, t=60, b=40),
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="white",
+    )
+    return fig
+
+
+def build_confidence_drop_fig(df: pd.DataFrame) -> go.Figure:
+    """Bar chart of average confidence drop per ticker.
+
+    Args:
+        df: DataFrame with ``ticker`` and ``confidence_drop`` columns.
+
+    Returns:
+        A :class:`plotly.graph_objects.Figure`.
+    """
+    avg = df.groupby("ticker")["confidence_drop"].mean().reset_index()
+    fig = go.Figure(data=[
+        go.Bar(
+            x=avg["ticker"],
+            y=avg["confidence_drop"],
+            marker_color=["#6366F1", "#EC4899", "#F59E0B"],
+            text=[f"{v:.2%}" for v in avg["confidence_drop"]],
+            textposition="auto",
+        )
+    ])
+    fig.update_layout(
+        title="Average Confidence Drop per Ticker",
+        xaxis_title="Ticker",
+        yaxis_title="Avg Confidence Drop",
+        yaxis_range=[0, 1.05],
+        height=500,
+        margin=dict(l=40, r=40, t=60, b=40),
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="white",
+    )
+    return fig
+
+
+def build_temporal_leakage_fig(df: pd.DataFrame) -> go.Figure:
+    """Bar chart comparing valid vs future-dated (leaked) news counts per ticker.
+
+    Args:
+        df: DataFrame with ``ticker``, ``valid_news_count``, and
+            ``invalid_future_news_count`` columns.
+
+    Returns:
+        A :class:`plotly.graph_objects.Figure`.
+    """
+    ticker_groups = df.groupby("ticker")[["valid_news_count", "invalid_future_news_count"]].sum().reset_index()
+    fig = go.Figure(data=[
+        go.Bar(name="Valid News", x=ticker_groups["ticker"], y=ticker_groups["valid_news_count"],
+               marker_color="#22C55E"),
+        go.Bar(name="Future-Dated (Leaked)", x=ticker_groups["ticker"],
+               y=ticker_groups["invalid_future_news_count"], marker_color="#EF4444"),
+    ])
+    fig.update_layout(
+        barmode="group",
+        title="Temporal Leakage Warning: Valid vs Future-Dated News per Ticker",
+        xaxis_title="Ticker",
+        yaxis_title="News Item Count",
+        height=500,
+        margin=dict(l=40, r=40, t=60, b=40),
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="white",
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+    )
+    return fig
+
+
+def build_faithfulness_radar_fig(df: pd.DataFrame) -> go.Figure:
+    """Radar chart of average faithfulness metric scores.
+
+    Args:
+        df: DataFrame with ``temporal_validity``, ``evidence_support``, and
+            ``confidence_drop`` columns.
+
+    Returns:
+        A :class:`plotly.graph_objects.Figure`.
+    """
+    metrics = ["temporal_validity", "evidence_support", "confidence_drop"]
+    labels = ["Temporal Validity", "Evidence Support", "Confidence Drop"]
+    means = [df[m].mean() for m in metrics]
+    # Close the polygon
+    r_vals = means + [means[0]]
+    theta_vals = labels + [labels[0]]
+    fig = go.Figure(data=[
+        go.Scatterpolar(
+            r=r_vals,
+            theta=theta_vals,
+            fill="toself",
+            marker_color="#6366F1",
+            line_color="#4F46E5",
+            name="Avg Score",
+        )
+    ])
+    fig.update_layout(
+        polar=dict(
+            radialaxis=dict(visible=True, range=[0, 1])
+        ),
+        title="Faithfulness Metrics Radar (Corpus Average)",
+        height=500,
+        margin=dict(l=60, r=60, t=80, b=60),
+        paper_bgcolor="white",
+    )
+    return fig
+
+
+# ---------------------------------------------------------------------------
+# Streamlit dashboard
+# ---------------------------------------------------------------------------
 
 def _pred_emoji(pred: str) -> str:
     return {"UP": "🟢 UP", "DOWN": "🔴 DOWN"}.get(pred, "⚪ HOLD")
 
 
 def main() -> None:
+    import streamlit as st
+    from loader import load_dataset, load_corpus_csv
+    from retriever import retrieve
+    from faithfulness_metrics import evaluate_faithfulness
+    from forecast_model import (
+        forecast_from_news,
+        forecast_from_news_finbert,
+        run_forecast,
+        _checkpoint_available,
+    )
+
+    _FINBERT_AVAILABLE = _checkpoint_available()
+
     # Set page configuration for wide layout and custom styling
     st.set_page_config(
         page_title="Stock Movement Forecast & Faithfulness",
@@ -320,6 +464,25 @@ def main() -> None:
         st.markdown(f"**Perturbed Prediction:** `{pert_pred}` (Confidence: `{pert_conf:.2%}`)")
         st.markdown(f"**Confidence Drop:** `{detail['confidence_drop']:.2%}`")
         st.markdown(f"**Prediction Changed?** `{'Yes' if orig_pred != pert_pred else 'No'}`")
+
+    # ── Corpus-level figures in the dashboard ───────────────────────────────
+    st.markdown('<div class="section-header">📊 Corpus-Level Analytics</div>', unsafe_allow_html=True)
+
+    corpus_path = current_dir.parent / "outputs" / "faithfulness_results.csv"
+    if corpus_path.exists():
+        df_corpus = pd.read_csv(corpus_path)
+        dash_col1, dash_col2 = st.columns(2)
+        with dash_col1:
+            st.plotly_chart(build_prediction_distribution_fig(df_corpus), use_container_width=True)
+        with dash_col2:
+            st.plotly_chart(build_confidence_drop_fig(df_corpus), use_container_width=True)
+        dash_col3, dash_col4 = st.columns(2)
+        with dash_col3:
+            st.plotly_chart(build_temporal_leakage_fig(df_corpus), use_container_width=True)
+        with dash_col4:
+            st.plotly_chart(build_faithfulness_radar_fig(df_corpus), use_container_width=True)
+    else:
+        st.info("Run `python src/main.py` first to generate `outputs/faithfulness_results.csv`.")
 
     # Warnings logs
     warnings = retrieval.get("warnings", []) + record.get("warnings", [])
