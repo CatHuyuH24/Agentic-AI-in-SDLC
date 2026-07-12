@@ -194,7 +194,7 @@ def main() -> None:
     parser.add_argument(
         "--model",
         choices=["rule", "finbert", "both"],
-        default="rule",
+        default="both",
         help="Model backend to use (default: rule). 'both' generates week4_comparison.csv.",
     )
     args = parser.parse_args()
@@ -209,6 +209,9 @@ def main() -> None:
         raw_records = load_dataset(DEFAULT_DATASET)
 
     if args.model == "both":
+        # Generate the single-model outputs for the finbert model to update faithfulness_results.csv
+        results = _run_single_model(raw_records, model="finbert")
+        _write_single_model_outputs(results, label="finbert")
         _run_both_models(raw_records)
     else:
         results = _run_single_model(raw_records, model=args.model)
