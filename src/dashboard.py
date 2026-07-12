@@ -19,7 +19,7 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 
-from loader import load_dataset
+from loader import load_dataset, load_corpus_csv
 from retriever import retrieve
 from faithfulness_metrics import evaluate_faithfulness
 from forecast_model import (
@@ -87,7 +87,11 @@ def main() -> None:
 
     # Load dataset
     try:
-        records = load_dataset()
+        corpus_path = current_dir.parent / "data" / "financial_corpus.csv"
+        if corpus_path.exists():
+            records = load_corpus_csv(corpus_path)
+        else:
+            records = load_dataset()
     except Exception as e:
         st.error(f"Failed to load dataset: {e}")
         st.stop()
@@ -202,7 +206,7 @@ def main() -> None:
                 "Filtering Reason": item.get("reason")
             } for item in invalid_news
         ])
-        st.dataframe(leakage_df, use_container_width=True)
+        st.dataframe(leakage_df, width="stretch")
 
     # ── Evidence Table ───────────────────────────────────────────────────────
     st.markdown('<div class="section-header">News Evidence Breakdown</div>', unsafe_allow_html=True)
@@ -220,7 +224,7 @@ def main() -> None:
                 "Rationale": item.get("rationale")
             })
         df_evidence = pd.DataFrame(evidence_data)
-        st.dataframe(df_evidence, use_container_width=True)
+        st.dataframe(df_evidence, width="stretch")
     else:
         st.info("No valid news items were extracted as directional evidence.")
 

@@ -153,18 +153,18 @@ class FinBERTFusionModel:
                 for p in self.bert.parameters():
                     p.requires_grad = False
                 hidden       = self.bert.config.hidden_size
-                self.fusion  = _nn.Linear(hidden + 2, 128)
+                self.fusion_layer = _nn.Linear(hidden + 2, 128)
                 self.relu    = _nn.ReLU()
                 self.dropout = _nn.Dropout(0.2)
-                self.output  = _nn.Linear(128, 3)
+                self.output_layer = _nn.Linear(128, 3)
 
             def forward(self, input_ids, attention_mask, price_features):
                 cls_vec = self.bert(
                     input_ids=input_ids, attention_mask=attention_mask
                 ).last_hidden_state[:, 0, :]
                 fused  = _torch_ref.cat([cls_vec, price_features], dim=1)
-                x      = self.dropout(self.relu(self.fusion(fused)))
-                return self.output(x)
+                x      = self.dropout(self.relu(self.fusion_layer(fused)))
+                return self.output_layer(x)
 
         self._net_cls = _Net
 

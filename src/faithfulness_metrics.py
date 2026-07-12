@@ -151,6 +151,7 @@ def _mask_sentiment_terms(news_items: list[dict[str, Any]]) -> list[dict[str, An
 def calculate_confidence_drop(
     valid_news: list[dict[str, Any]],
     price_features: dict[str, Any],
+    model: str = "rule",
 ) -> dict[str, Any]:
     """Compute Confidence Drop by re-running the forecast on perturbed news.
 
@@ -158,7 +159,7 @@ def calculate_confidence_drop(
       - Copy the valid news array.
       - Replace every sentiment keyword (positive *and* negative) from the
         extractor's lexicon with the neutral placeholder ``"note"``.
-      - Run ``forecast_from_news`` on the masked copy.
+      - Run ``run_forecast`` on the masked copy using the selected model.
       - Measure the drop in confidence.
 
     The metric follows the formula agreed in ``spec.md``::
@@ -172,6 +173,8 @@ def calculate_confidence_drop(
         valid_news:     Accepted news items from the temporal retriever.
         price_features: Price feature dict (``price_5d_return``,
                         ``volume_change_pct``).
+        model:          Model backend to use for the primary forecast
+                        (``"rule"`` or ``"finbert"``).
 
     Returns:
         Dict with keys:
@@ -181,13 +184,13 @@ def calculate_confidence_drop(
             ``is_faithful``      (bool: drop > 0.10 or prediction changed).
     """
     # --- Original forecast ---
-    original = forecast_from_news(valid_news, price_features)
+    original = run_forecast(valid_news, price_features, model=model)
     orig_pred = original["prediction"]
     orig_conf = original["confidence"]
 
     # --- Perturbed forecast ---
     perturbed_news = _mask_sentiment_terms(valid_news)
-    perturbed = forecast_from_news(perturbed_news, price_features)
+    perturbed = run_forecast(perturbed_news, price_features, model=model)
     pert_pred = perturbed["prediction"]
     pert_conf = perturbed["confidence"]
 
@@ -229,9 +232,7 @@ def evaluate_faithfulness(
                           ``valid_news`` and ``invalid_future_news``.
         price_features:   Price feature dict from the raw record.
         model:            Model backend to use for the primary forecast
-                          (``"rule"`` or ``"finbert"``).  The counterfactual
-                          confidence-drop calculation always uses rule-based
-                          for determinism and explainability.
+                          (``"rule"`` or ``"finbert"``).
 
     Returns:
         Dict with keys ``temporal_validity``, ``evidence_support``,
@@ -252,8 +253,8 @@ def evaluate_faithfulness(
     counterevidence_coverage = calculate_counterevidence_coverage(evidence, prediction)
     market_consistency = calculate_market_consistency(evidence, price_features)
 
-    # Confidence drop always uses rule-based (deterministic, explainable).
-    drop_detail = calculate_confidence_drop(valid_news, price_features)
+    # Compute confidence drop using the selected model
+    drop_detail = calculate_confidence_drop(valid_news, price_features, model=model)
 
     return {
         "temporal_validity": temporal_validity,
