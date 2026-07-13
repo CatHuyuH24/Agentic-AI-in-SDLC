@@ -138,11 +138,22 @@ def _mask_sentiment_terms(news_items: list[dict[str, Any]]) -> list[dict[str, An
             raw = item.get(field)
             if not isinstance(raw, str):
                 continue
-            tokens = raw.split()
-            masked = [
-                _NEUTRAL_TOKEN if token.lower().rstrip(".,;:!?") in all_terms else token
-                for token in tokens
-            ]
+
+            stripped = raw.lower()
+            tokens = stripped.split()
+            masked = []
+            for token in tokens:
+                token_clean = token.rstrip(".,;:!?\"'()[]{}")
+                if token_clean in all_terms:
+                    masked.append(_NEUTRAL_TOKEN)
+                elif token_clean.endswith("ies") and token_clean[:-3] + "y" in all_terms:
+                    masked.append(_NEUTRAL_TOKEN)
+                elif token_clean.endswith("es") and token_clean[:-2] in all_terms:
+                    masked.append(_NEUTRAL_TOKEN)
+                elif token_clean.endswith("s") and token_clean[:-1] in all_terms:
+                    masked.append(_NEUTRAL_TOKEN)
+                else:
+                    masked.append(token)
             item[field] = " ".join(masked)
 
     return perturbed

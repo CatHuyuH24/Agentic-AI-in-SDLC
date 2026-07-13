@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
 
@@ -15,6 +16,29 @@ NEGATIVE_TERMS = (
     "risk", "delay", "fall", "underperform", "pressure", "cut", "concern"
 )
 
+_LEXICON_TERMS = set(POSITIVE_TERMS) | set(NEGATIVE_TERMS)
+
+
+def _normalize_token(token: str) -> str | None:
+    """Map a token to its canonical lexicon form when possible."""
+    candidate = token.strip().lower()
+    if not candidate:
+        return None
+
+    if candidate in _LEXICON_TERMS:
+        return candidate
+
+    if candidate.endswith("ies") and candidate[:-3] + "y" in _LEXICON_TERMS:
+        return candidate[:-3] + "y"
+
+    if candidate.endswith("es") and candidate[:-2] in _LEXICON_TERMS:
+        return candidate[:-2]
+
+    if candidate.endswith("s") and candidate[:-1] in _LEXICON_TERMS:
+        return candidate[:-1]
+
+    return None
+
 
 def extract_evidence(news_items: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Create simple evidence candidates from accepted news items.
@@ -26,9 +50,22 @@ def extract_evidence(news_items: list[dict[str, Any]]) -> list[dict[str, Any]]:
     evidence: list[dict[str, Any]] = []
 
     for item in news_items:
-        text = str(item.get("cleaned_text") or item.get("text") or item.get("title") or "").lower()
-        positive_hits = [term for term in POSITIVE_TERMS if term in text]
-        negative_hits = [term for term in NEGATIVE_TERMS if term in text]
+        text = str(item.get("cleaned_text") or item.get("text") or item.get("title") or "")
+        tokens = re.findall(r"[a-zA-Z]+(?:'[a-zA-Z]+)?", text.lower())
+
+        positive_hits: list[str] = []
+        negative_hits: list[str] = []
+        for tok in tokens:
+            normalized = _normalize_token(tok)
+            if normalized is None:
+                continue
+            if normalized in POSITIVE_TERMS:
+                positive_hits.append(normalized)
+            elif normalized in NEGATIVE_TERMS:
+                negative_hits.append(normalized)
+
+        positive_hits = sorted(set(positive_hits))
+        negative_hits = sorted(set(negative_hits))
 
         if not positive_hits and not negative_hits:
             direction = "HOLD"

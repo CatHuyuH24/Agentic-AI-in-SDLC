@@ -8,3 +8,11 @@ models/*.pkl
 
 # Notebook checkpoints
 .ipynb_checkpoints/
+
+# Python virtual environement
+.venv
+
+# Data (to be cloned from other sources)
+sn2
+
+.env

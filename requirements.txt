@@ -1,5 +1,6 @@
 pytest
 yfinance
+requests
 datasets
 kaggle
 pandas

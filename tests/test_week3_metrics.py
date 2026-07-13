@@ -24,7 +24,7 @@ from faithfulness_metrics import (
     calculate_temporal_validity,
     evaluate_faithfulness,
 )
-from loader import load_dataset
+from loader import load_corpus_csv, load_dataset
 from retriever import retrieve
 
 
@@ -195,6 +195,15 @@ class TestCalculateConfidenceDrop:
 # ---------------------------------------------------------------------------
 # evaluate_faithfulness – integration test against real dataset
 # ---------------------------------------------------------------------------
+
+class TestCorpusCsvLoader:
+    def test_load_corpus_csv_preserves_title_and_text_for_evidence(self):
+        records = load_corpus_csv(Path(__file__).resolve().parents[1] / "data" / "financial_corpus.csv")
+        assert records
+        first_item = records[0]["news"][0]
+        assert first_item["title"]
+        assert first_item["text"]
+
 
 class TestEvaluateFaithfulness:
     def test_returns_all_required_keys(self):

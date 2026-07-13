@@ -68,13 +68,6 @@ def load_corpus_csv(path: str | Path) -> list[dict[str, Any]]:
     index = 1
     
     # Actually, the python structure for retriever expects list of dicts.
-    for _, row in df.iterrows():
-        # But wait, in fetch_real_data.py, we created one row per news.
-        # No, wait, in fetch_real_data.py, we joined price and news such that there's 1 row per news,
-        # but multiple rows could have the same ticker and forecast_time.
-        # Wait, the retriever expects a list of news inside the record!
-        pass
-        
     grouped = df.groupby(['ticker', 'forecast_time', 'price_5d_return', 'volume_change_pct', 'label'])
     
     for name, group in grouped:
@@ -82,11 +75,14 @@ def load_corpus_csv(path: str | Path) -> list[dict[str, Any]]:
         
         news_data = []
         for _, n_row in group.iterrows():
+            title = n_row.get("news_title") or n_row.get("title") or ""
+            text = n_row.get("cleaned_text") or n_row.get("text") or title or ""
             news_data.append({
                 "news_id": f"N-{ticker}-{index}-{len(news_data)}",
                 "news_time": n_row['news_time'],
-                "raw_title": n_row['news_title'],
-                "cleaned_text": n_row['cleaned_text']
+                "title": title,
+                "text": text,
+                "cleaned_text": text,
             })
             
         record = {

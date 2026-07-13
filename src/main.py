@@ -14,9 +14,9 @@ Usage
     python src/main.py --model both          # run both, write comparison CSV
 
 Output files (under outputs/):
-    week3_pipeline_output.json   — full combined result per record (active model)
+    pipeline_output.json   — full combined result per record (active model)
     faithfulness_results.csv     — compact CSV summary (active model)
-    week4_comparison.csv         — side-by-side comparison (--model both only)
+    comparison.csv         — side-by-side comparison (--model both only)
 """
 
 from __future__ import annotations
@@ -93,7 +93,7 @@ def _write_single_model_outputs(results: list[dict], label: str) -> None:
     """Write JSON + CSV outputs for a single-model run."""
     _OUTPUTS_DIR.mkdir(exist_ok=True)
 
-    json_path = _OUTPUTS_DIR / "week3_pipeline_output.json"
+    json_path = _OUTPUTS_DIR / "pipeline_output.json"
     json_path.write_text(json.dumps(results, indent=2), encoding="utf-8")
 
     csv_path = _OUTPUTS_DIR / "faithfulness_results.csv"
@@ -166,7 +166,7 @@ def _run_both_models(raw_records: list[dict]) -> None:
             "finbert_correct": int(fb_pred == true_label),
         })
 
-    csv_path = _OUTPUTS_DIR / "week4_comparison.csv"
+    csv_path = _OUTPUTS_DIR / "comparison.csv"
     fields = [
         "record_index", "ticker",
         "rule_prediction", "rule_confidence",
@@ -195,7 +195,7 @@ def main() -> None:
         "--model",
         choices=["rule", "finbert", "both"],
         default="both",
-        help="Model backend to use (default: rule). 'both' generates week4_comparison.csv.",
+        help="Model backend to use (default: rule). 'both' generates comparison.csv.",
     )
     args = parser.parse_args()
 
