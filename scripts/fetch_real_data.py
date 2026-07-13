@@ -152,7 +152,7 @@ def load_news(tickers, start: str = "2023-01-01", end: str = "2025-12-31"):
             "tickers": ticker,
             "time_from": start_formatted,
             "time_to": end_formatted,
-            "limit": 20,
+            "limit": 1000,
             "sort": "EARLIEST",
             "apikey": api_key,
         }
@@ -235,7 +235,10 @@ def align_news_to_prices(price_df, news_df):
 
         for _, p_row in price_subset.iterrows():
             forecast_time = p_row["forecast_time"]
-            prior_news = news_subset[news_subset["news_time"] < forecast_time]
+            prior_news = news_subset[
+                (news_subset["news_time"] < forecast_time) & 
+                (news_subset["news_time"] >= forecast_time - pd.Timedelta(days=7))
+            ]
             if prior_news.empty:
                 continue
 
