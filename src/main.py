@@ -199,13 +199,13 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    csv_path = Path("data/financial_corpus.csv")
+    csv_path = Path("src/data/financial_corpus.csv")
     if csv_path.exists():
         from loader import load_corpus_csv
         print(f"Loading data from {csv_path}...")
         raw_records = load_corpus_csv(csv_path)
     else:
-        print("Warning: data/financial_corpus.csv not found, falling back to sample_dataset.json")
+        print("Warning: src/data/financial_corpus.csv not found, falling back to sample_dataset.json")
         raw_records = load_dataset(DEFAULT_DATASET)
 
     if args.model == "both":

@@ -65,9 +65,17 @@ Financial News + Price Data (CSV / real-time)
 
 ## Setup
 
-**First, go to https://www.alphavantage.co/support/#api-key to claim your API then put it in `.env` file next to `.env.example`**
+### Clone project
+
+Clone project with
+
+```bash
+git clone git@github.com:CatHuyuH24/Agentic-AI-in-SDLC.git #SSH
+```
 
 ### Fetch data
+
+**First, go to https://www.alphavantage.co/support/#api-key to claim your API then put it in `.env` file next to `.env.example`**
 
 Run the script to fetch price and news data. Update the date in the script if needed (currently from "1/1/2023" to "31/12/2025").
 
