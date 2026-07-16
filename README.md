@@ -3,7 +3,7 @@
 > **Course:** Công nghệ mới (New Technologies)
 > **Team:** 2 members | **Deadline:** 2026-07-14
 
-A production-quality prototype that forecasts stock movement (UP / DOWN / HOLD) from financial news and then *verifies* whether the cited evidence actually drove the prediction—distinguishing faithful explanations from post-hoc rationalization.
+A production-quality prototype that forecasts stock movement (UP / DOWN / HOLD) from financial news and then _verifies_ whether the cited evidence actually drove the prediction—distinguishing faithful explanations from post-hoc rationalization.
 
 ## Overview
 
@@ -58,12 +58,22 @@ Financial News + Price Data (CSV / real-time)
 
 ### Dependency files
 
-| File | Purpose |
-|---|---|
-| `requirements.txt` | CPU-only: core pipeline, Streamlit, Plotly, kaleido |
-| `requirements-gpu.txt` | GPU: adds CUDA-enabled PyTorch + transformers |
+| File                   | Purpose                                             |
+| ---------------------- | --------------------------------------------------- |
+| `requirements.txt`     | CPU-only: core pipeline, Streamlit, Plotly, kaleido |
+| `requirements-gpu.txt` | GPU: adds CUDA-enabled PyTorch + transformers       |
 
 ## Setup
+
+**First, go to https://www.alphavantage.co/support/#api-key to claim your API then put it in `.env` file next to `.env.example`**
+
+### Fetch data
+
+Run the script to fetch price and news data. Update the date in the script if needed (currently from "1/1/2023" to "31/12/2025").
+
+```bash
+python data/scripts/fetch_real_data.py
+```
 
 ### CPU (recommended for quick start)
 
@@ -90,7 +100,7 @@ Output: `models/finbert_fusion.pt`
 
 ```bash
 # Both
-python src/main.py 
+python src/main.py
 
 # FinBERT mode
 python src/main.py --model finbert
@@ -99,7 +109,7 @@ python src/main.py --model finbert
 python src/main.py --model rule
 ```
 
-Outputs: `outputs/faithfulness_results.csv`, `outputs/week4_comparison.csv`
+Outputs: `outputs/faithfulness_results.csv`, `outputs/comparison.csv`
 
 ### Interactive dashboard
 
@@ -203,10 +213,10 @@ Agentic-AI-in-SDLC/
 
 ## Results Summary
 
-| Model | Accuracy | Avg Confidence Drop | Device |
-|---|---|---|---|
-| Rule-Based (Net Sentiment) | ~16% | 0.00 (lexicon-sparse data) | CPU |
-| FinBERT Fusion (ProsusAI/finbert) | ~44% | N/A (batch eval) | GPU T4 |
+| Model                             | Accuracy | Avg Confidence Drop        | Device |
+| --------------------------------- | -------- | -------------------------- | ------ |
+| Rule-Based (Net Sentiment)        | ~16%     | 0.00 (lexicon-sparse data) | CPU    |
+| FinBERT Fusion (ProsusAI/finbert) | ~44%     | N/A (batch eval)           | GPU T4 |
 
 **Faithful predictions:** ~33% of evaluated records had a confidence drop > 0.10 (evidence was causally necessary).
 

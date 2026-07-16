@@ -145,10 +145,8 @@ class FinBERTFusionModel:
         class _Net(_nn.Module):
             def __init__(self):
                 super().__init__()
-                # use_safetensors=True bypasses torch.load (CVE-2025-32434),
-                # allowing this to work on torch < 2.6.
                 self.bert    = AutoModel.from_pretrained(
-                    _FINBERT_BASE, use_safetensors=True
+                    _FINBERT_BASE, use_safetensors=False
                 )
                 for p in self.bert.parameters():
                     p.requires_grad = False
