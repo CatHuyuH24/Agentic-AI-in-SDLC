@@ -95,6 +95,7 @@ def extract_evidence(news_items: list[dict[str, Any]]) -> list[dict[str, Any]]:
                     "positive": positive_hits,
                     "negative": negative_hits,
                 },
+                "evidence_text": item.get("text", item.get("title", "")),
                 "rationale": rationale,
             }
         )

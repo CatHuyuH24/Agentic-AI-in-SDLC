@@ -11,7 +11,7 @@ from loader import load_dataset
 from retriever import retrieve
 
 
-DATASET_PATH = Path(__file__).resolve().parents[1] / "data" / "sample_dataset.json"
+DATASET_PATH = Path(__file__).resolve().parents[1] / "src" / "data" / "sample_dataset.json"
 
 
 class TestAdvancedFaithfulnessMetrics:

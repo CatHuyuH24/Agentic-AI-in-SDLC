@@ -28,7 +28,7 @@ from loader import load_corpus_csv, load_dataset
 from retriever import retrieve
 
 
-DATASET_PATH = Path(__file__).resolve().parents[1] / "data" / "sample_dataset.json"
+DATASET_PATH = Path(__file__).resolve().parents[1] / "src" / "data" / "sample_dataset.json"
 
 
 # ---------------------------------------------------------------------------
@@ -198,7 +198,7 @@ class TestCalculateConfidenceDrop:
 
 class TestCorpusCsvLoader:
     def test_load_corpus_csv_preserves_title_and_text_for_evidence(self):
-        records = load_corpus_csv(Path(__file__).resolve().parents[1] / "data" / "financial_corpus.csv")
+        records = load_corpus_csv(Path(__file__).resolve().parents[1] / "src" / "data" / "financial_corpus.csv")
         assert records
         first_item = records[0]["news"][0]
         assert first_item["title"]
@@ -262,3 +262,66 @@ class TestEvaluateFaithfulness:
         retrieval = retrieve(sample)
         result = evaluate_faithfulness(retrieval, sample.get("price_features", {}))
         assert result["temporal_validity"] == 1.0
+
+
+    def test_comprehensive_faithfulness_metrics_calculation(self):
+        # Create a varied test input to ensure all metrics are computed correctly
+        record = {
+            "ticker": "TSLA",
+            "forecast_time": "2024-06-15 12:00:00",
+            "price_features": {
+                "price_5d_return": 0.05,
+                "volume_change_pct": 0.1
+            },
+            "news": [
+                {
+                    "news_id": "n1",
+                    "news_time": "2024-06-14 12:00:00", # valid
+                    "title": "Strong growth",
+                    "text": "The company posted strong growth and beat profit expectations.",
+                    "cleaned_text": "the company posted strong growth and beat profit expectations"
+                },
+                {
+                    "news_id": "n2",
+                    "news_time": "2024-06-15 10:00:00", # valid
+                    "title": "Lawsuit risk",
+                    "text": "However, lawsuit risk is weak and might lead to a delay.",
+                    "cleaned_text": "however lawsuit risk is weak and might lead to a delay"
+                },
+                {
+                    "news_id": "n3",
+                    "news_time": "2024-06-15 13:00:00", # invalid
+                    "title": "Future news",
+                    "text": "Future news",
+                    "cleaned_text": "future news"
+                }
+            ]
+        }
+        
+        retrieval = retrieve(record)
+        # 2 valid, 1 invalid
+        result = evaluate_faithfulness(retrieval, record["price_features"])
+        
+        # Check Temporal Validity (2 valid / 3 total) = 0.6667
+        assert result["temporal_validity"] == pytest.approx(0.6667, abs=1e-3)
+        
+        # Check Evidence Support
+        assert "evidence_support" in result
+        
+        # Check Market Consistency (Price features positive -> bull regime)
+        assert result["market_regime"] == "bull"
+        
+        # Check Counterevidence Coverage
+        assert "counterevidence_coverage" in result
+        
+        # Check Confidence Drop
+        assert "confidence_drop" in result
+        assert "confidence_drop_detail" in result
+        
+        print("\nFaithfulness Metrics Computation Output:")
+        print(f"Temporal Validity: {result['temporal_validity']}")
+        print(f"Evidence Support: {result['evidence_support']}")
+        print(f"Counterevidence Coverage: {result['counterevidence_coverage']}")
+        print(f"Market Consistency: {result['market_consistency']} (Regime: {result['market_regime']})")
+        print(f"Confidence Drop: {result['confidence_drop']}")
+        print(f"Is Faithful: {result['confidence_drop_detail']['is_faithful']}")
