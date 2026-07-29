@@ -56,6 +56,9 @@ def _get_alpha_vantage_api_key() -> str:
 
 
 def _to_market_open(timestamp: pd.Timestamp) -> pd.Timestamp:
+    # round to day (floor("D")), remove time details
+    # then set to 9:00 AM
+    # provide consistent time approximation (only include time before prediction time)
     return pd.Timestamp(timestamp).floor("D") + pd.Timedelta(hours=9)
 
 
@@ -66,22 +69,22 @@ def _safe_text(value: str | None) -> str:
 def _parse_av_timestamp(value: str) -> pd.Timestamp | None:
     if not value:
         return None
-
     try:
-        return pd.Timestamp(datetime.strptime(value, "%Y%m%dT%H%M%S"))
+        return pd.Timestamp(datetime.strptime(value, "%Y%m%dT%H%M%S")) # convert to Alpha Vantage required format
     except ValueError:
         return None
 
-
+# download historical stock prices, convert them into machine-learning-ready dataset
+# each row represents one trading day for one stock
 def download_prices(tickers, start, end):
     print(f"Downloading prices for {tickers} from {start} to {end}...")
     raw = yf.download(
         tickers,
         start=start,
         end=end,
-        group_by="ticker",
-        auto_adjust=False,
-        threads=False,
+        group_by="ticker", # group by tickets
+        auto_adjust=False, # False to get original raw prices
+        threads=False, # avoid network issue
     )
 
     records = []
@@ -94,15 +97,24 @@ def download_prices(tickers, start, end):
             ticker_df = raw[ticker].copy() if ticker in raw.columns else raw.xs(ticker, axis=1, level=0).copy() # type: ignore
 
         ticker_df = ticker_df.dropna()
-        ticker_df["price_5d_return"] = ticker_df["Close"].pct_change(periods=5)
-        ticker_df["volume_change_pct"] = ticker_df["Volume"].pct_change(periods=1)
+        # price change percentage over 5 days 
+        ticker_df["price_5d_return"] = ticker_df["Close"].pct_change(periods=5) 
+
+        # volumne change percentage compared with day before
+        ticker_df["volume_change_pct"] = ticker_df["Volume"].pct_change(periods=1) 
+
+        # calculate the price change percentage of current day compared with the day before (yesterday)
+        # then shift forward, meaning return the price change percentage of the day after (tomorrow)
+        # this becomes the prediction target
         ticker_df["next_day_return"] = ticker_df["Close"].pct_change(periods=1).shift(-1)
 
-        for date, row in ticker_df.iterrows():
+        for date, row in ticker_df.iterrows(): # each iteration represents one trading day
             if pd.isna(row["next_day_return"]) or pd.isna(row["price_5d_return"]):
-                continue
+                continue # skip unusable rows
 
             ret = float(row["next_day_return"])
+            # threshold = 0.5%, more means UP, less means DOWN, else HOLD
+            # effectively turns into 3-class classification problem
             if ret > 0.005:
                 label = "UP"
             elif ret < -0.005:
@@ -168,10 +180,12 @@ def load_news(tickers, start: str = "2023-01-01", end: str = "2025-12-31"):
             raise ValueError(f"Alpha Vantage did not return a Feed payload for {ticker}: {payload}")
 
         for article in payload.get(feed_key, []):
+            # parse time from Alpha Vantage format to Timestamp object (later called with strftime)
             news_time = _parse_av_timestamp(article.get("time_published"))
             if news_time is None:
                 continue
 
+            # the "title" and/or "summary" may be missing when fetched from Alpha Vantage
             title = _safe_text(article.get("title"))
             summary = _safe_text(article.get("summary"))
             text = summary or title
@@ -188,7 +202,7 @@ def load_news(tickers, start: str = "2023-01-01", end: str = "2025-12-31"):
             records.append(
                 {
                     "ticker": ticker,
-                    "news_time": news_time.strftime("%Y-%m-%d %H:%M:%S"),
+                    "news_time": news_time.strftime("%Y-%m-%d %H:%M:%S"), # later will be standardized to 9:00 AM
                     "title": title,
                     "text": text,
                     "cleaned_text": cleaned_text.lower(),
@@ -202,31 +216,35 @@ def load_news(tickers, start: str = "2023-01-01", end: str = "2025-12-31"):
 
     return pd.DataFrame(records)
 
-
-def map_polarity(polarity_label):
-    if polarity_label == 1:
-        return "UP"
-    elif polarity_label == 0:
-        return "DOWN"
-    return "HOLD"
-
-
 def align_news_to_prices(price_df, news_df):
+    """
+    Ensure no future news is used.
+    <br/>For each trading date, derive a forecast_time 
+    and pair it with the latest news article published before that time.
+    <br/>This creates time-aligned samples for downstream model training and inference.
+    <br/>It can also support perturbation-based evaluation,
+    where the news text is rewritten with neutral wording 
+    and the prediction is rerun to measure how much the model’s confidence changes.
+    """
     print("Aligning Alpha Vantage news to price forecast timestamps...")
     aligned_records = []
-
     if price_df.empty or news_df.empty:
         return pd.DataFrame(aligned_records)
+    
+    price_df = price_df.copy() # to ensure original input left intact
 
-    price_df = price_df.copy()
+    # turn all trading_date into Timstamp instances (allow comparison)
     price_df["trading_date"] = pd.to_datetime(price_df["trading_date"])
+
+    # make every trading date to be around 9:00 AM, effectively ensure date comparison is correct
     price_df["forecast_time"] = price_df["trading_date"].apply(_to_market_open)
 
     news_df = news_df.copy()
-    news_df["news_time"] = pd.to_datetime(news_df["news_time"], errors="coerce")
-    news_df = news_df.dropna(subset=["news_time"]).sort_values("news_time")
+    news_df["news_time"] = pd.to_datetime(news_df["news_time"], errors="coerce") # if parsing fail then 'NaT' instead of throwing
+    news_df = news_df.dropna(subset=["news_time"]).sort_values("news_time") # drop invalid timestamps 'NaT' and sort based on time 
 
     for ticker in sorted(price_df["ticker"].unique()):
+        # process each ticker independently, based on time
         price_subset = price_df[price_df["ticker"] == ticker].sort_values("forecast_time")
         news_subset = news_df[news_df["ticker"] == ticker].sort_values("news_time")
 
@@ -235,6 +253,9 @@ def align_news_to_prices(price_df, news_df):
 
         for _, p_row in price_subset.iterrows():
             forecast_time = p_row["forecast_time"]
+
+            # only latest news before forcast_time, and can't be more than 7 days before forecast_time
+            # if none satisfied, skip that price_dataframe row, not adding to final aligned_records
             prior_news = news_subset[
                 (news_subset["news_time"] < forecast_time) & 
                 (news_subset["news_time"] >= forecast_time - pd.Timedelta(days=7))
@@ -242,7 +263,8 @@ def align_news_to_prices(price_df, news_df):
             if prior_news.empty:
                 continue
 
-            latest_news = prior_news.iloc[-1]
+            # pick the latest, simplify logic, but in the future may take all into account for more robustness
+            latest_news = prior_news.iloc[-1] 
             aligned_records.append(
                 {
                     "ticker": ticker,
@@ -260,11 +282,6 @@ def align_news_to_prices(price_df, news_df):
 
     return pd.DataFrame(aligned_records)
 
-
-def join_price_and_news(price_df, news_df):
-    return align_news_to_prices(price_df, news_df)
-
-
 def save_corpus(df, path):
     print(f"Saving corpus to {path}...")
     path_obj = Path(path)
@@ -278,5 +295,5 @@ if __name__ == "__main__":
     tickers = ["AAPL", "TSLA", "NVDA"]
     price_df = download_prices(tickers, "2023-01-01", "2025-12-31")
     news_df = load_news(tickers)
-    final_df = join_price_and_news(price_df, news_df)
+    final_df = align_news_to_prices(price_df, news_df)
     save_corpus(final_df, ROOT_DIR / "../data" / "financial_corpus.csv")
