@@ -236,7 +236,8 @@ def align_news_to_prices(price_df, news_df):
     # turn all trading_date into Timstamp instances (allow comparison)
     price_df["trading_date"] = pd.to_datetime(price_df["trading_date"])
 
-    # make every trading date to be around 9:00 AM, effectively ensure date comparison is correct
+    # make every forecast_time to be trading_date but set to around 9:00 AM,
+    # this effectively simplify and ensure each forecast_time are evenly separated (consistency and predictability)
     price_df["forecast_time"] = price_df["trading_date"].apply(_to_market_open)
 
     news_df = news_df.copy()

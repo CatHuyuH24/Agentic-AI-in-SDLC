@@ -11,7 +11,7 @@ from schema_adapter import canonical_output, normalize_record
 
 DEFAULT_DATASET = Path(__file__).resolve().parent.parent / "data" / "sample_dataset.json"
 
-
+# not used in the final version (because it's .csv)
 def load_dataset(path: str | Path = DEFAULT_DATASET) -> list[dict[str, Any]]:
     """Load and normalize raw records from a JSON file."""
     dataset_path = Path(path)
@@ -75,6 +75,7 @@ def load_corpus_csv(path: str | Path) -> list[dict[str, Any]]:
         
         news_data = []
         for _, n_row in group.iterrows():
+            # fallback logic to parse the fields from the row safely
             title = n_row.get("news_title") or n_row.get("title") or ""
             text = n_row.get("cleaned_text") or n_row.get("text") or title or ""
             news_data.append({
@@ -84,7 +85,8 @@ def load_corpus_csv(path: str | Path) -> list[dict[str, Any]]:
                 "text": text,
                 "cleaned_text": text,
             })
-            
+
+        # prepare data for CPU processing, GPU learning and processing 
         record = {
             "ticker": ticker,
             "forecast_time": forecast_time,
@@ -96,7 +98,7 @@ def load_corpus_csv(path: str | Path) -> list[dict[str, Any]]:
             "label": label
         }
         
-        # We need to normalize it using existing schema
+        # ensure adhere to expected schema (defined in JSON format)
         normalized_record = normalize_record(record, index)
         records.append({
             "ticker": normalized_record["ticker"],

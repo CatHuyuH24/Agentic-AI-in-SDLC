@@ -29,7 +29,10 @@ def cleaned_text(value: str) -> str:
 
 
 def normalize_record(raw_record: dict[str, Any], record_index: int) -> dict[str, Any]:
-    """Normalize one raw record into the Week 1 canonical contract."""
+    """
+    Normalize one raw record into the Week 1 canonical contract.
+    <br/> Ensure the record have required fields, valid labels, correct timestamp format
+    """
     warnings: list[str] = []
     ticker = raw_record.get("ticker")
     forecast_time = raw_record.get("forecast_time")
