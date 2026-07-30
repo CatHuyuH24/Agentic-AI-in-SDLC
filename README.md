@@ -80,7 +80,7 @@ git clone git@github.com:CatHuyuH24/Agentic-AI-in-SDLC.git #SSH
 Run the script to fetch price and news data. Update the date in the script if needed (currently from "1/1/2023" to "31/12/2025").
 
 ```bash
-python data/scripts/fetch_real_data.py
+python src/data/scripts/fetch_real_data.py
 ```
 
 ### CPU (recommended for quick start)
@@ -130,7 +130,7 @@ Opens at `http://localhost:8501`. Select ticker and record from the sidebar.
 ### Export output figures (4 PNG files → `outputs/figures/`)
 
 ```bash
-python scripts/export_figures.py
+python src/data/scripts/export_figures.py
 ```
 
 Requires `outputs/faithfulness_results.csv` (run `main.py` first). Needs `kaleido==0.2.1`.
@@ -138,7 +138,7 @@ Requires `outputs/faithfulness_results.csv` (run `main.py` first). Needs `kaleid
 ### Run all tests
 
 ```bash
-pytest tests/
+pytest --html=tests/report.html --self-contained-html
 ```
 
 46+ tests across temporal retriever, evidence extractor, faithfulness metrics, and model dispatcher.
@@ -153,10 +153,14 @@ Agentic-AI-in-SDLC/
 ├── requirements.txt                   ← CPU dependencies
 ├── requirements-gpu.txt               ← GPU dependencies (PyTorch + transformers)
 │
-├── data/
-│   └── financial_corpus.csv           ← Real corpus: 350 rows, AAPL/TSLA/NVDA
-│
 ├── src/
+│   ├── data/
+│   │   ├── financial_corpus.csv           ← Real corpus: 350 rows, AAPL/TSLA/NVDA
+│   │   └── scripts/
+│   │       ├── fetch_real_data.py              ← Fetch price and news data
+│   │       ├── export_figures.py              ← Headless PNG export (kaleido 0.2.1)
+│   │       └── verify_week1.py                ← Week 1 verification helper
+│   │
 │   ├── __init__.py
 │   ├── loader.py                      ← CSV loader + corpus normalization
 │   ├── schema_adapter.py              ← Raw row → unified JSON schema
@@ -172,9 +176,7 @@ Agentic-AI-in-SDLC/
 │   ├── test_metrics.py                ← Faithfulness metric unit tests
 │   └── ...                            ← Additional test modules
 │
-├── scripts/
-│   ├── export_figures.py              ← Headless PNG export (kaleido 0.2.1)
-│   └── verify_week1.py                ← Week 1 verification helper
+├──
 │
 ├── models/
 │   └── finbert_fusion.pt              ← FinBERT checkpoint (~418 MB, Git LFS)
