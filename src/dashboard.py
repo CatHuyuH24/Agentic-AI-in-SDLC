@@ -209,7 +209,8 @@ def main() -> None:
 
     # Load dataset
     try:
-        corpus_path = current_dir.parent / "data" / "financial_corpus.csv"
+        corpus_path = current_dir.parent / "src" / "data" / "financial_corpus.csv"
+        print(corpus_path)
         if corpus_path.exists():
             records = load_corpus_csv(corpus_path)
         else:
