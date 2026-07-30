@@ -1,3 +1,4 @@
 {
-  "python.analysis.extraPaths": ["./src/data/scripts"]
+  "python.analysis.extraPaths": ["./src/data/scripts"],
+  "markdown-pdf.convertOnSave": true
 }

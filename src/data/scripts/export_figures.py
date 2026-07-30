@@ -17,7 +17,7 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 FIGURES_DIR  = PROJECT_ROOT / "outputs" / "figures"
 RESULTS_CSV  = PROJECT_ROOT / "outputs" / "faithfulness_results.csv"
 

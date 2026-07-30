@@ -1,4 +1,5 @@
 # Faithful Evidence-Centric Financial News Forecasting
+
 ## A Prototype for Verifiable AI Explanations in Stock Movement Prediction
 
 **Course:** Công nghệ mới (New Technologies)
@@ -11,9 +12,9 @@
 
 ## 1. Introduction
 
-Artificial intelligence systems that predict stock market movements from news headlines are increasingly common in quantitative finance. A forecasting model can cite a news headline—"Apple reports weak iPhone sales"—as the reason it predicted *DOWN*, making the decision appear transparent and justified. However, the central question of this project is: **Does the cited evidence actually drive the prediction, or is it merely decorative post-hoc rationalization?**
+Artificial intelligence systems that predict stock market movements from news headlines are increasingly common in quantitative finance. A forecasting model can cite a news headline—"Apple reports weak iPhone sales"—as the reason it predicted _DOWN_, making the decision appear transparent and justified. However, the central question of this project is: **Does the cited evidence actually drive the prediction, or is it merely decorative post-hoc rationalization?**
 
-This work builds a small, fully runnable prototype—the *Faithful Evidence-Centric Financial News Forecasting System*—that not only produces UP/DOWN/HOLD predictions from news data but also systematically *measures* whether the cited evidence was causally necessary for each prediction. The pipeline runs on real market data (AAPL, TSLA, NVDA; 350 rows), implements temporal safety to prevent lookahead bias, and evaluates faithfulness through counterfactual perturbation—masking evidence keywords and measuring the resulting drop in model confidence.
+This work builds a small, fully runnable prototype—the _Faithful Evidence-Centric Financial News Forecasting System_—that not only produces UP/DOWN/HOLD predictions from news data but also systematically _measures_ whether the cited evidence was causally necessary for each prediction. The pipeline runs on real market data (AAPL, TSLA, NVDA; 350 rows), implements temporal safety to prevent lookahead bias, and evaluates faithfulness through counterfactual perturbation—masking evidence keywords and measuring the resulting drop in model confidence.
 
 The project was developed using an Agentic SDLC framework in which AI coding agents (Antigravity/Gemini) were used at every phase of development—requirements, design, implementation, testing, and evaluation—while human quality gates and OpenSpec documentation ensured traceability and verifiability throughout.
 
@@ -23,7 +24,7 @@ The project was developed using an Agentic SDLC framework in which AI coding age
 
 ### 2.1 The Problem with Post-Hoc Explanations
 
-Explainable AI (XAI) has produced many tools for attributing model predictions to input features. However, the dominant practice in deployed systems is *post-hoc rationalization*: the model makes a decision first, and an explanation is generated afterwards from a separate attribution method (e.g., LIME, SHAP). This decoupling means the explanation may not actually describe the model's internal reasoning.
+Explainable AI (XAI) has produced many tools for attributing model predictions to input features. However, the dominant practice in deployed systems is _post-hoc rationalization_: the model makes a decision first, and an explanation is generated afterwards from a separate attribution method (e.g., LIME, SHAP). This decoupling means the explanation may not actually describe the model's internal reasoning.
 
 In financial NLP, this failure mode is particularly dangerous. A model may systematically predict UP for AAPL regardless of news content (because price momentum dominates), but consistently cite positive headlines as its "reason"—misleading analysts into trusting the explanations.
 
@@ -31,14 +32,14 @@ In financial NLP, this failure mode is particularly dangerous. A model may syste
 
 We distinguish two properties of explanations:
 
-- **Plausibility:** Does the explanation *sound* reasonable to a human? (Easy to satisfy, even with hallucinated rationales.)
-- **Faithfulness:** Does the explanation accurately reflect *what the model actually used* to arrive at its decision? (Hard to satisfy—requires causal verification.)
+- **Plausibility:** Does the explanation _sound_ reasonable to a human? (Easy to satisfy, even with hallucinated rationales.)
+- **Faithfulness:** Does the explanation accurately reflect _what the model actually used_ to arrive at its decision? (Hard to satisfy—requires causal verification.)
 
-This project focuses exclusively on faithfulness, measured by a counterfactual protocol: if removing the cited evidence from the model input causes a significant drop in confidence (or changes the prediction), the evidence is deemed *causally necessary* and therefore faithful.
+This project focuses exclusively on faithfulness, measured by a counterfactual protocol: if removing the cited evidence from the model input causes a significant drop in confidence (or changes the prediction), the evidence is deemed _causally necessary_ and therefore faithful.
 
 ### 2.3 Temporal Integrity as a Pre-condition
 
-A separate, foundational problem in financial ML is **temporal leakage**: using news published *after* the forecast timestamp as model input. A system that unknowingly uses future information will appear far more accurate in backtesting than it will in live deployment. Our pipeline enforces a strict temporal firewall at the retriever layer, flagging and excluding all news items whose `news_time ≥ forecast_time`.
+A separate, foundational problem in financial ML is **temporal leakage**: using news published _after_ the forecast timestamp as model input. A system that unknowingly uses future information will appear far more accurate in backtesting than it will in live deployment. Our pipeline enforces a strict temporal firewall at the retriever layer, flagging and excluding all news items whose `news_time ≥ forecast_time`.
 
 ---
 
@@ -48,18 +49,18 @@ A separate, foundational problem in financial ML is **temporal leakage**: using 
 
 This project was specified, designed, and implemented using the **OpenSpec** methodology—a spec-driven development workflow where every change is documented as a structured change containing:
 
-- `proposal.md` — *why* the change is needed (problem + capabilities)
-- `design.md` — *how* to implement it (technical decisions + risks)
-- `specs/<name>/spec.md` — *what* the system must do (acceptance criteria in Given/When/Then format)
-- `tasks.md` — *implementation checklist* (trackable, ≤2 hr chunks)
+- `proposal.md` — _why_ the change is needed (problem + capabilities)
+- `design.md` — _how_ to implement it (technical decisions + risks)
+- `specs/<name>/spec.md` — _what_ the system must do (acceptance criteria in Given/When/Then format)
+- `tasks.md` — _implementation checklist_ (trackable, ≤2 hr chunks)
 
 Three OpenSpec changes were completed over the project lifetime:
 
-| Change Name | Purpose | Status |
-|---|---|---|
+| Change Name                     | Purpose                                                                                      | Status      |
+| ------------------------------- | -------------------------------------------------------------------------------------------- | ----------- |
 | `faithful-evidence-forecasting` | Core pipeline: retriever, extractor, rule-based model, basic faithfulness metrics, dashboard | ✅ Complete |
-| `finbert-fusion-model` | Week 4: FinBERT GPU fine-tuning, dual-model dispatcher, model comparison panel | ✅ Complete |
-| `week5-advanced-faithfulness` | Week 5: Counterevidence coverage, market regime classification, market consistency scoring | ✅ Complete |
+| `finbert-fusion-model`          | Week 4: FinBERT GPU fine-tuning, dual-model dispatcher, model comparison panel               | ✅ Complete |
+| `week5-advanced-faithfulness`   | Week 5: Counterevidence coverage, market regime classification, market consistency scoring   | ✅ Complete |
 
 ### 3.2 Human-AI Governance & Quality Gates
 
@@ -76,14 +77,14 @@ No AI-generated code is merged without a matching local validation run.
 
 ### 3.3 SDLC Phase × AI Agent Usage
 
-| SDLC Phase | AI Agent Contribution | Human Oversight |
-|---|---|---|
-| Requirements | Generated user stories, acceptance criteria, JSON schemas | Reviewed for testability and scope clarity |
-| Design | Proposed pipeline architecture, module boundaries, fusion layer design | Selected architecture; adjusted for 2-member team capacity |
+| SDLC Phase     | AI Agent Contribution                                                                                                                               | Human Oversight                                                   |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| Requirements   | Generated user stories, acceptance criteria, JSON schemas                                                                                           | Reviewed for testability and scope clarity                        |
+| Design         | Proposed pipeline architecture, module boundaries, fusion layer design                                                                              | Selected architecture; adjusted for 2-member team capacity        |
 | Implementation | Generated `retriever.py`, `evidence_extractor.py`, `forecast_model.py`, `faithfulness_metrics.py`, `loader.py`, `schema_adapter.py`, `dashboard.py` | Read, tested, and edited every module; ran `pytest` before commit |
-| Testing | Generated `test_temporal_retriever.py`, `test_metrics.py` test cases | Ran full test suite; fixed 3 edge-case failures manually |
-| Evaluation | Suggested confidence drop threshold (0.10) and radar chart design | Verified metric formulas; cross-checked against assignment rubric |
-| Operation | Generated OpenSpec trace entries and quality-gate format | Approved each ledger entry; confirmed gate before merging |
+| Testing        | Generated `test_temporal_retriever.py`, `test_metrics.py` test cases                                                                                | Ran full test suite; fixed 3 edge-case failures manually          |
+| Evaluation     | Suggested confidence drop threshold (0.10) and radar chart design                                                                                   | Verified metric formulas; cross-checked against assignment rubric |
+| Operation      | Generated OpenSpec trace entries and quality-gate format                                                                                            | Approved each ledger entry; confirmed gate before merging         |
 
 ---
 
@@ -93,12 +94,12 @@ No AI-generated code is merged without a matching local validation run.
 
 The system uses `data/financial_corpus.csv`, a real financial dataset assembled from public market data sources. Key statistics:
 
-| Property | Value |
-|---|---|
-| Total records | 350 |
-| Tickers | AAPL (104), NVDA (90), TSLA (156) |
-| Date range | 2026-05-01 — 2026-06-30 |
-| Label distribution | UP: ~44%, DOWN: ~35%, HOLD: ~21% |
+| Property                   | Value                                 |
+| -------------------------- | ------------------------------------- |
+| Total records              | 350                                   |
+| Tickers                    | AAPL (104), NVDA (90), TSLA (156)     |
+| Date range                 | 2026-05-01 — 2026-06-30               |
+| Label distribution         | UP: ~44%, DOWN: ~35%, HOLD: ~21%      |
 | Temporal leakage test rows | Present in simulated batch (see §6.3) |
 
 Each record maps to the unified JSON schema:
@@ -108,8 +109,14 @@ Each record maps to the unified JSON schema:
   "ticker": "AAPL",
   "forecast_time": "2026-06-03 09:00:00",
   "price_features": { "price_5d_return": -0.0152, "volume_change_pct": 0.084 },
-  "news_data": [{ "news_id": "N-001", "news_time": "2026-06-02 16:30:00",
-                  "raw_title": "Apple Facing Slower iPhone Shipments", "cleaned_text": "..." }],
+  "news_data": [
+    {
+      "news_id": "N-001",
+      "news_time": "2026-06-02 16:30:00",
+      "raw_title": "Apple Facing Slower iPhone Shipments",
+      "cleaned_text": "..."
+    }
+  ],
   "ground_truth": { "next_day_return": -0.0082, "label": "DOWN" }
 }
 ```
@@ -171,15 +178,15 @@ News Headlines + Price Data (CSV)
 
 ### 5.2 Module Descriptions
 
-| Module | Role |
-|---|---|
-| `loader.py` | Loads `financial_corpus.csv` and normalizes records to the unified JSON schema; handles missing fields gracefully. |
-| `schema_adapter.py` | Converts raw CSV rows into the internal pipeline format used by `retriever.py` and downstream modules. |
-| `retriever.py` | Implements `TemporalRetriever`: filters news by strict `news_time < forecast_time` boundary; returns `valid_news` and `invalid_future_news` lists. |
-| `evidence_extractor.py` | `RuleBasedEvidenceExtractor`: maps lexicon keywords (e.g., "surge" → positive→UP; "misses" → negative→DOWN) to evidence items with polarity and support score. |
-| `forecast_model.py` | Dual-model dispatcher: `forecast_from_news()` (rule-based) and `forecast_from_news_finbert()` (FinBERT fusion); `_checkpoint_available()` enables graceful fallback. |
+| Module                    | Role                                                                                                                                                                                                 |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `loader.py`               | Loads `financial_corpus.csv` and normalizes records to the unified JSON schema; handles missing fields gracefully.                                                                                   |
+| `schema_adapter.py`       | Converts raw CSV rows into the internal pipeline format used by `retriever.py` and downstream modules.                                                                                               |
+| `retriever.py`            | Implements `TemporalRetriever`: filters news by strict `news_time < forecast_time` boundary; returns `valid_news` and `invalid_future_news` lists.                                                   |
+| `evidence_extractor.py`   | `RuleBasedEvidenceExtractor`: maps lexicon keywords (e.g., "surge" → positive→UP; "misses" → negative→DOWN) to evidence items with polarity and support score.                                       |
+| `forecast_model.py`       | Dual-model dispatcher: `forecast_from_news()` (rule-based) and `forecast_from_news_finbert()` (FinBERT fusion); `_checkpoint_available()` enables graceful fallback.                                 |
 | `faithfulness_metrics.py` | `evaluate_faithfulness()`: orchestrates evidence support, temporal validity, counterfactual perturbation (confidence drop), counterevidence coverage, market regime, and market consistency scoring. |
-| `dashboard.py` | Streamlit application: record selector, KPI metrics, evidence table, model comparison panel, counterfactual visualization, and corpus-level analytics (4 Plotly charts). |
+| `dashboard.py`            | Streamlit application: record selector, KPI metrics, evidence table, model comparison panel, counterfactual visualization, and corpus-level analytics (4 Plotly charts).                             |
 
 ---
 
@@ -204,7 +211,7 @@ An explanation is labelled **FAITHFUL** if `Confidence Drop > 0.10` or the predi
 
 ### 6.2 Advanced Faithfulness Metrics (Week 5)
 
-**Counterevidence Coverage** measures whether the model also surfaced news that *contradicts* its forecast direction:
+**Counterevidence Coverage** measures whether the model also surfaced news that _contradicts_ its forecast direction:
 
 `CE Coverage = 1.0 if evidence contains both supporting and contradicting items, else 0.0`
 
@@ -222,10 +229,10 @@ The FinBERT fusion model was fine-tuned on the `financial_corpus.csv` training s
 
 **Table 1: Model Performance Comparison**
 
-| Model | Device | Samples | Accuracy | Avg Confidence Drop |
-|---|---|---|---|---|
-| Rule-Based (Net Sentiment) | CPU | 350 | ~16% | 0.00 |
-| FinBERT Fusion (ProsusAI/finbert) | GPU T4 | 350 | ~44% | N/A (batch eval) |
+| Model                             | Device | Samples | Accuracy | Avg Confidence Drop |
+| --------------------------------- | ------ | ------- | -------- | ------------------- |
+| Rule-Based (Net Sentiment)        | CPU    | 350     | ~16%     | 0.00                |
+| FinBERT Fusion (ProsusAI/finbert) | GPU T4 | 350     | ~44%     | N/A (batch eval)    |
 
 The Rule-Based model defaults to HOLD (confidence = 0.5) on nearly all records because the real-data corpus contains rich FinBERT signals but very sparse lexicon keyword matches—most news headlines don't contain simple polarity tokens. FinBERT outperforms the rule-based baseline significantly (+28 percentage points accuracy) because it captures nuanced financial sentiment beyond the lexicon.
 
@@ -234,22 +241,22 @@ The Rule-Based model defaults to HOLD (confidence = 0.5) on nearly all records b
 **Figure 1 — Prediction Distribution (`prediction_distribution.png`):**
 The bar chart shows that the Rule-Based model predominantly outputs HOLD (≈95% of records), with a small fraction producing UP from lexicon matches. This reflects the known limitation of keyword-based sentiment on real financial news.
 
-![Prediction Distribution](https://res.cloudinary.com/dvzhmi7a9/image/upload/v1783247464/prediction_distribution_atjdic.png)
+![Prediction Distribution](../outputs/figures/prediction_distribution.png)
 
 **Figure 2 — Confidence Drop per Ticker (`confidence_drop.png`):**
 Average confidence drop is 0.00 for most HOLD predictions (no lexicon terms to mask) and rises to ~0.74–0.79 for the minority of records where lexicon terms were found. This bimodal distribution correctly separates "evidence-driven" predictions from "default" predictions.
 
-![Confidence Drop](https://res.cloudinary.com/dvzhmi7a9/image/upload/v1783247464/confidence_drop_p2bnon.png)
+![Confidence Drop](../outputs/figures/confidence_drop.png)
 
 **Figure 3 — Temporal Leakage Warning (`temporal_leakage_warning.png`):**
 The grouped bar chart shows, for each ticker, how many news items were accepted as valid vs. rejected as future-dated. In the simulated evaluation batch, approximately 50% of items were flagged per ticker—confirming the retriever correctly enforces the temporal barrier.
 
-![Temporal Leakage Warning](https://res.cloudinary.com/dvzhmi7a9/image/upload/v1783247463/temporal_leakage_warning_w5ouau.png)
+![Temporal Leakage Warning](../outputs/figures/temporal_leakage_warning.png)
 
 **Figure 4 — Faithfulness Radar (`faithfulness_radar.png`):**
 The radar chart visualizes the corpus-average scores for Temporal Validity (~0.50), Evidence Support (~0.33), and Confidence Drop (~0.16). Temporal Validity is constrained by the balanced valid/invalid split. Confidence Drop is low overall due to the HOLD-dominated distribution.
 
-![Faithfulness Radar](https://res.cloudinary.com/dvzhmi7a9/image/upload/v1783247465/faithfulness_radar_fpokgs.png)
+![Faithfulness Radar](../outputs/figures/faithfulness_radar.png)
 
 ---
 
@@ -259,35 +266,35 @@ The radar chart visualizes the corpus-average scores for Temporal Validity (~0.5
 
 From `outputs/faithfulness_results.csv`:
 
-| Field | Value |
-|---|---|
-| Ticker | AAPL |
-| Forecast Time | 2026-06-03 09:00:00 |
-| Ground Truth | DOWN |
-| Prediction | UP |
-| Confidence | 0.74 |
-| Valid News Count | 1 |
-| Invalid (Future) News | 0 |
-| Confidence Drop | 0.74 |
-| Faithfulness | **FAITHFUL** |
+| Field                 | Value               |
+| --------------------- | ------------------- |
+| Ticker                | AAPL                |
+| Forecast Time         | 2026-06-03 09:00:00 |
+| Ground Truth          | DOWN                |
+| Prediction            | UP                  |
+| Confidence            | 0.74                |
+| Valid News Count      | 1                   |
+| Invalid (Future) News | 0                   |
+| Confidence Drop       | 0.74                |
+| Faithfulness          | **FAITHFUL**        |
 
-**Analysis:** The model found 1 valid news item containing a positive polarity term (e.g., "launch"), producing a UP prediction with confidence 0.74. After masking the lexicon keyword, the confidence fell to 0.00 (HOLD at 0.50 default), yielding a confidence drop of 0.74—well above the 0.10 threshold. The explanation is **faithful**: the cited evidence was causally necessary. Note that the prediction was still incorrect (ground truth: DOWN), illustrating the difference between *faithfulness* and *accuracy*.
+**Analysis:** The model found 1 valid news item containing a positive polarity term (e.g., "launch"), producing a UP prediction with confidence 0.74. After masking the lexicon keyword, the confidence fell to 0.00 (HOLD at 0.50 default), yielding a confidence drop of 0.74—well above the 0.10 threshold. The explanation is **faithful**: the cited evidence was causally necessary. Note that the prediction was still incorrect (ground truth: DOWN), illustrating the difference between _faithfulness_ and _accuracy_.
 
 ### 8.2 Case B — POST-HOC Evidence (Record: AAPL, Row 2)
 
-| Field | Value |
-|---|---|
-| Ticker | AAPL |
-| Forecast Time | 2026-06-03 09:00:00 |
-| Ground Truth | UP |
-| Prediction | HOLD |
-| Confidence | 0.50 |
-| Valid News Count | 0 |
-| Invalid (Future) News | 1 |
-| Confidence Drop | 0.00 |
-| Faithfulness | **POST_HOC_DECORATION** |
+| Field                 | Value                   |
+| --------------------- | ----------------------- |
+| Ticker                | AAPL                    |
+| Forecast Time         | 2026-06-03 09:00:00     |
+| Ground Truth          | UP                      |
+| Prediction            | HOLD                    |
+| Confidence            | 0.50                    |
+| Valid News Count      | 0                       |
+| Invalid (Future) News | 1                       |
+| Confidence Drop       | 0.00                    |
+| Faithfulness          | **POST_HOC_DECORATION** |
 
-**Analysis:** The one available news item was future-dated (`news_time ≥ forecast_time`) and was correctly filtered by the retriever. With zero valid news, the model defaulted to HOLD at confidence 0.50. Removing evidence had no effect (confidence drop = 0.00). The system correctly labels this as POST\_HOC\_DECORATION, not because the explanation was wrong, but because no evidence was available to drive the prediction at all—this is the temporal leakage protection working as designed.
+**Analysis:** The one available news item was future-dated (`news_time ≥ forecast_time`) and was correctly filtered by the retriever. With zero valid news, the model defaulted to HOLD at confidence 0.50. Removing evidence had no effect (confidence drop = 0.00). The system correctly labels this as POST_HOC_DECORATION, not because the explanation was wrong, but because no evidence was available to drive the prediction at all—this is the temporal leakage protection working as designed.
 
 ---
 
@@ -324,7 +331,7 @@ From `outputs/faithfulness_results.csv`:
   pytest tests/test_temporal_retriever.py — 12/12 passed.
 ```
 
-### B. Prompt Used for Spec Generation 
+### B. Prompt Used for Spec Generation
 
 ```
 SYSTEM ROLE: Expert Business Analyst & Financial Product Owner
